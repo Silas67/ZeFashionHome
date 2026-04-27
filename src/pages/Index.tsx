@@ -1,16 +1,49 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useEffect } from "react";
+import { Nav } from "@/components/still/Nav";
+import { Hero } from "@/components/still/Hero";
+import { Story } from "@/components/still/Story";
+import { Marquee } from "@/components/still/Marquee";
+import { Waitlist } from "@/components/still/Waitlist";
+import { Sponsor } from "@/components/still/Sponsor";
+import { SocialProof } from "@/components/still/SocialProof";
+import { Countdown } from "@/components/still/Countdown";
+import { Footer } from "@/components/still/Footer";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
+  useEffect(() => {
+    document.title = "STILL — Ahava Yoffi · Fashion × Creativity Exhibition";
+    const meta = document.querySelector('meta[name="description"]') ?? document.createElement("meta");
+    meta.setAttribute("name", "description");
+    meta.setAttribute(
+      "content",
+      "STILL — an immersive fashion × creativity exhibition by Ahava Yoffi. Reserve your place on the waitlist or partner with us."
+    );
+    document.head.appendChild(meta);
+
+    // Reveal-on-scroll
+    const els = document.querySelectorAll(".reveal");
+    const obs = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((e) => e.isIntersecting && e.target.classList.add("in")),
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
-    </div>
+    <main className="bg-paper text-ink">
+      <Nav />
+      <Hero />
+      <Marquee />
+      <Story />
+      <Countdown />
+      <Waitlist />
+      <SocialProof />
+      <Sponsor />
+      <Footer />
+    </main>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
