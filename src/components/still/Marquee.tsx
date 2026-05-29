@@ -1,4 +1,4 @@
-const words = ["LIVING MANNEQUIN", "·", "ZE", "·", "Fashion × Creativity", "·", "MMXXVI", "·"];
+const words = ["LIVING MANNEQUIN", "·", "ZË", "·", "Fashion × Creativity", "·", "MMXXVI", "·"];
 
 
 export const Marquee = () => {

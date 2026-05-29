@@ -86,7 +86,7 @@ export const Sponsor = () => {
           <div className="md:col-span-7">
             <p className="text-[11px] tracking-editorial uppercase text-rose">— Partnership</p>
             <h2 className="mt-6 font-serif text-5xl md:text-7xl leading-[0.95] text-balance">
-              Build with Ze, in
+              Build with ZË, in
               <br />
               <em className="text-rose">quiet luxury.</em>
             </h2>

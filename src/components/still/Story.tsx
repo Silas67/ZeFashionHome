@@ -26,7 +26,7 @@ export const Story = () => {
           <div className="hairline my-10 max-w-[120px]" />
           <div className="space-y-6 text-ink-soft text-lg font-light leading-relaxed max-w-xl">
             <p>
-              <span className="font-serif text-2xl text-ink">ZE</span> — a Nigerian creative platform founded on the belief that fashion is not just
+              <span className="font-serif text-2xl text-ink">ZË</span> — a Nigerian creative platform founded on the belief that fashion is not just
               worn, but embodied- presents its debut exhibition. An evening curated as a slow choreography between garment
               and gesture, art and atmosphere.
 

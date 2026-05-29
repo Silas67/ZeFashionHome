@@ -31,13 +31,13 @@ export const Hero = () => {
               transition={{ duration: 1, delay: 0.2 }}
               className="text-[11px] tracking-editorial uppercase text-champagne mb-8"
             >
-              ZE presents
+              ZË presents
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.4, delay: 0.4 }}
-              className="font-serif text-[18vw] md:text-[14vw] lg:text-[180px] leading-[0.85] tracking-tighter text-balance"
+              className="font-serif text-[18vw] md:text-[14vw] lg:text-[120px] leading-[0.85] tracking-tighter text-balance"
             >
               LIVING MANNEQUIN EVENT<span className="text-rose">.</span>
             </motion.h1>
