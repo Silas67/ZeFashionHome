@@ -22,7 +22,7 @@ export const Nav = () => {
     >
       <nav className="max-w-[1600px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
         <a href="#top" className="font-serif text-lg md:text-xl tracking-luxe text-ink">
-          ZE
+          ZË
         </a>
         <ul className="hidden md:flex items-center gap-10">
           {links.map((l) => (
