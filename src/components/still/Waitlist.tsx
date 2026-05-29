@@ -10,7 +10,7 @@ type Tier = "general" | "vip" | "exhibitor" | "sponsor";
 const tiers: { id: Tier; label: string; sub: string; note: string }[] = [
   { id: "general", label: "General", sub: "Open admission", note: "Access to the main exhibition floor and lounge." },
   { id: "vip", label: "VIP", sub: "By invitation", note: "Private preview, designer salon, atelier dinner." },
-  { id: "exhibitor", label: "Creative Exhibitor", sub: "Designers & artists", note: "Apply to present your work in the curated programme." },
+  { id: "exhibitor", label: "Creatives", sub: "Designers & artists", note: "Apply to present your work in the curated programme." },
   { id: "sponsor", label: "Sponsor", sub: "Brand partners", note: "Strategic partnership and brand integrations." },
 ];
 
@@ -55,7 +55,7 @@ export const Waitlist = () => {
         .toString(36)
         .slice(2, 8)
         .toUpperCase()}`;
-      const payload = JSON.stringify({ event: "STILL", tier, code, name: parsed.data.name });
+      const payload = JSON.stringify({ event: "LIVING MANNEQUIN", tier, code, name: parsed.data.name });
       const qr = await QRCode.toDataURL(payload, {
         margin: 1,
         width: 480,
@@ -122,7 +122,7 @@ export const Waitlist = () => {
                       </div>
                       <div className="flex justify-between border-t border-paper/15 pt-3">
                         <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
-                        <dd>14 · 09 · 2026</dd>
+                        <dd>14 · 08 · 2026</dd>
                       </div>
                     </dl>
                     <Button
@@ -141,7 +141,7 @@ export const Waitlist = () => {
                       className="w-full max-w-[280px] aspect-square"
                     />
                     <p className="text-center text-[10px] tracking-editorial uppercase text-ink/60 mt-3">
-                      STILL · Pass {confirmation.code}
+                      LIVING MANNIQUIEN · Pass {confirmation.code}
                     </p>
                   </div>
                 </div>
@@ -169,17 +169,15 @@ export const Waitlist = () => {
                           type="button"
                           key={t.id}
                           onClick={() => setTier(t.id)}
-                          className={`p-5 text-left transition-all duration-500 ${
-                            active
-                              ? "bg-champagne text-ink"
-                              : "bg-ink text-paper hover:bg-paper/5"
-                          }`}
+                          className={`p-5 text-left transition-all duration-500 ${active
+                            ? "bg-champagne text-ink"
+                            : "bg-ink text-paper hover:bg-paper/5"
+                            }`}
                         >
                           <div className="font-serif text-2xl">{t.label}</div>
                           <div
-                            className={`text-[10px] tracking-editorial uppercase mt-1 ${
-                              active ? "text-ink/60" : "text-paper/50"
-                            }`}
+                            className={`text-[10px] tracking-editorial uppercase mt-1 ${active ? "text-ink/60" : "text-paper/50"
+                              }`}
                           >
                             {t.sub}
                           </div>

@@ -17,13 +17,12 @@ export const Nav = () => {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-700 ${
-        scrolled ? "bg-paper/85 backdrop-blur-md border-b border-ink/10" : "bg-transparent"
-      }`}
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-700 ${scrolled ? "bg-paper/85 backdrop-blur-md border-b border-ink/10" : "bg-transparent"
+        }`}
     >
       <nav className="max-w-[1600px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
         <a href="#top" className="font-serif text-lg md:text-xl tracking-luxe text-ink">
-          Ahava Yoffi
+          ZE
         </a>
         <ul className="hidden md:flex items-center gap-10">
           {links.map((l) => (

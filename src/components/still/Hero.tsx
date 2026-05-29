@@ -31,7 +31,7 @@ export const Hero = () => {
               transition={{ duration: 1, delay: 0.2 }}
               className="text-[11px] tracking-editorial uppercase text-champagne mb-8"
             >
-              Ahava Yoffi presents
+              ZE presents
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
@@ -39,7 +39,7 @@ export const Hero = () => {
               transition={{ duration: 1.4, delay: 0.4 }}
               className="font-serif text-[18vw] md:text-[14vw] lg:text-[180px] leading-[0.85] tracking-tighter text-balance"
             >
-              STILL<span className="text-rose">.</span>
+              LIVING MANNEQUIN EVENT<span className="text-rose">.</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -47,8 +47,8 @@ export const Hero = () => {
               transition={{ duration: 1, delay: 0.9 }}
               className="mt-8 max-w-xl text-base md:text-lg text-paper/80 font-light leading-relaxed"
             >
-              An immersive exhibition where fashion meets creativity — a singular evening of
-              sculpture, silhouette, and silence.
+              An immersive exhibition where fashion meets art -a single evening of living
+              form, creative expression, and intentional presence.
             </motion.p>
 
             <motion.div

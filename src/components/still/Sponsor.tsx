@@ -6,7 +6,7 @@ import sponsorImg from "@/assets/sponsor-still.jpg";
 
 const packages = [
   {
-    name: "Atelier",
+    name: "Bronze",
     price: "€8,500",
     color: "border-ink/15",
     perks: [
@@ -17,7 +17,7 @@ const packages = [
     ],
   },
   {
-    name: "Salon",
+    name: "Silver",
     price: "€24,000",
     featured: true,
     color: "border-rose",
@@ -30,7 +30,7 @@ const packages = [
     ],
   },
   {
-    name: "Couture",
+    name: "Gold",
     price: "On request",
     color: "border-ink/15",
     perks: [
@@ -86,7 +86,7 @@ export const Sponsor = () => {
           <div className="md:col-span-7">
             <p className="text-[11px] tracking-editorial uppercase text-rose">— Partnership</p>
             <h2 className="mt-6 font-serif text-5xl md:text-7xl leading-[0.95] text-balance">
-              Build with us, in
+              Build with Ze, in
               <br />
               <em className="text-rose">quiet luxury.</em>
             </h2>
@@ -104,9 +104,8 @@ export const Sponsor = () => {
           {packages.map((p) => (
             <div
               key={p.name}
-              className={`bg-paper p-8 md:p-10 border-t-2 ${p.color} ${
-                p.featured ? "md:-translate-y-4" : ""
-              } transition-transform duration-700`}
+              className={`bg-paper p-8 md:p-10 border-t-2 ${p.color} ${p.featured ? "md:-translate-y-4" : ""
+                } transition-transform duration-700`}
             >
               <div className="flex items-baseline justify-between">
                 <h3 className="font-serif text-3xl">{p.name}</h3>

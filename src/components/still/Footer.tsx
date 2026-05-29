@@ -27,10 +27,9 @@ export const Footer = () => {
     <footer className="bg-ink text-paper py-20 md:py-28">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-12">
         <div className="md:col-span-5">
-          <div className="font-serif text-4xl">Ahava Yoffi</div>
+          <div className="font-serif text-4xl">ZE</div>
           <p className="mt-6 text-paper/60 max-w-sm leading-relaxed">
-            A studio devoted to the slow rituals of fashion. Headquartered in Tel Aviv,
-            exhibiting worldwide.
+            A Nigerian creative platform where fashion meets art. Based in Abuja, Nigeria. Founded by Ahava Yoffi.
           </p>
         </div>
 
@@ -60,14 +59,17 @@ export const Footer = () => {
           <a href="#story" className="hover:text-paper">Story</a>
           <a href="#waitlist" className="hover:text-paper">Waitlist</a>
           <a href="#sponsor" className="hover:text-paper">Sponsor</a>
-          <a href="mailto:hello@ahavayoffi.com" className="hover:text-paper">hello@ahavayoffi.com</a>
+          <a href="mailto:hello@ahavayoffi.com" className="hover:text-paper">ze.thebrand@gmail.com
+          </a>
         </div>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 mt-16 pt-8 border-t border-paper/15 flex flex-col md:flex-row justify-between gap-4 text-[10px] tracking-editorial uppercase text-paper/40">
-        <span>© MMXXVI · Ahava Yoffi</span>
-        <span>STILL — Vol. I</span>
-        <span>Tel Aviv</span>
+        <span>© MMXXVI · ZE</span>
+        <span>LIVING MANNEQUIN — VOL. I
+        </span>
+        <span>ABUJA
+        </span>
       </div>
     </footer>
   );

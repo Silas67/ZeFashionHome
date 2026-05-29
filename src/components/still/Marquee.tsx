@@ -1,4 +1,5 @@
-const words = ["STILL", "·", "Ahava Yoffi", "·", "Fashion × Creativity", "·", "MMXXVI", "·"];
+const words = ["LIVING MANNEQUIN", "·", "ZE", "·", "Fashion × Creativity", "·", "MMXXVI", "·"];
+
 
 export const Marquee = () => {
   const row = [...words, ...words, ...words, ...words];
@@ -8,9 +9,8 @@ export const Marquee = () => {
         {[...row, ...row].map((w, i) => (
           <span
             key={i}
-            className={`mx-6 font-serif text-3xl md:text-5xl ${
-              w === "·" ? "text-rose" : "text-paper"
-            }`}
+            className={`mx-6 font-serif text-3xl md:text-5xl ${w === "·" ? "text-rose" : "text-paper"
+              }`}
           >
             {w}
           </span>

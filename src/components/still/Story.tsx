@@ -19,31 +19,33 @@ export const Story = () => {
           <p className="text-[11px] tracking-editorial uppercase text-rose mb-8">— Chapter One</p>
           <h2 className="font-serif text-5xl md:text-7xl leading-[0.95] tracking-tight text-balance">
             A study in
+
             <br />
-            <em className="text-rose">stillness.</em>
+            <em className="text-rose">living form.</em>
           </h2>
           <div className="hairline my-10 max-w-[120px]" />
           <div className="space-y-6 text-ink-soft text-lg font-light leading-relaxed max-w-xl">
             <p>
-              <span className="font-serif text-2xl text-ink">Ahava Yoffi</span> — Hebrew for
-              <em> beloved beauty</em> — returns with its first exhibition of the season.
-              An evening curated as a slow choreography between garment and gesture.
+              <span className="font-serif text-2xl text-ink">ZE</span> — a Nigerian creative platform founded on the belief that fashion is not just
+              worn, but embodied- presents its debut exhibition. An evening curated as a slow choreography between garment
+              and gesture, art and atmosphere.
+
             </p>
             <p>
-              Twenty designers. One concrete hall. A single night to witness the
-              tension between movement and pause, fabric and form, intention and
-              accident.
+              Designers. Artists. Performers. One gallery space. A single night to witness the tension
+              between movement and pause, fabric and form, intention and expression.
+
             </p>
             <p className="text-ink">
-              This is not a runway. <em className="text-rose">This is the moment after.</em>
+              This is not a runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
             </p>
           </div>
 
           <dl className="mt-12 grid grid-cols-3 gap-6 max-w-md">
             {[
-              { k: "Designers", v: "20" },
-              { k: "Installations", v: "08" },
-              { k: "Hours", v: "06" },
+              { k: "CREATIVES", v: "20" },
+              { k: "INSTALLATIONS", v: "08" },
+              { k: "HOURS", v: "06" },
             ].map((m) => (
               <div key={m.k}>
                 <dt className="text-[10px] tracking-editorial uppercase text-ink/50">{m.k}</dt>

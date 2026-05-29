@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const TARGET = new Date("2026-09-14T19:00:00");
+const TARGET = new Date("2026-08-14T19:00:00");
 
 const calc = () => {
   const diff = Math.max(0, TARGET.getTime() - Date.now());
@@ -30,10 +30,10 @@ export const Countdown = () => {
       <div className="max-w-[1400px] mx-auto px-6 md:px-12 text-center">
         <p className="text-[11px] tracking-editorial uppercase text-rose">Save the date</p>
         <h2 className="mt-6 font-serif text-5xl md:text-8xl leading-none tracking-tight">
-          14 · September · 2026
+          14 · August · 2026
         </h2>
         <p className="mt-6 text-ink/60 tracking-luxe text-xs uppercase">
-          Hangar 11 · Tel Aviv Port · Doors 19:00
+          Abuja . Nigeria · Doors 16:00
         </p>
 
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-2 max-w-4xl mx-auto">
