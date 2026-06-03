@@ -8,10 +8,10 @@ import { toast } from "sonner";
 type Tier = "general" | "vip" | "exhibitor" | "sponsor";
 
 const tiers: { id: Tier; label: string; sub: string; note: string }[] = [
-  { id: "general", label: "General", sub: "Open admission", note: "Access to the main exhibition floor and lounge." },
-  { id: "vip", label: "VIP", sub: "By invitation", note: "Private preview, designer salon, atelier dinner." },
-  { id: "exhibitor", label: "Creatives", sub: "Designers & artists", note: "Apply to present your work in the curated programme." },
-  { id: "sponsor", label: "Sponsor", sub: "Brand partners", note: "Strategic partnership and brand integrations." },
+  { id: "general", label: "General", sub: "Open admission", note: "Access to the full Living Mannequin exhibition space, visual art installations, live performances, and champagne service. A curated evening, open to all." },
+  { id: "vip", label: "VIP", sub: "By invitation", note: "Priority entry, reserved front positioning within the exhibition space, and direct access to the Zë creative community. By invitation only." },
+  { id: "exhibitor", label: "Creatives", sub: "Designers & artists", note: "For designers, artists, performers, and makers who are part of or wish to join the Zë creative network. Your work is not background — it is the exhibition." },
+  { id: "sponsor", label: "Sponsor", sub: "Brand partners", note: "For brands and organisations partnering with Zë. Select your tier of interest and our team will be in touch to discuss alignment, benefits, and activation." },
 ];
 
 const schema = z.object({

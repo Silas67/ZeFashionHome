@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import hero from "@/assets/hero-still.jpg";
+import hero from "@/assets/hero.jpg";
 
 export const Hero = () => {
   return (
@@ -18,7 +18,7 @@ export const Hero = () => {
         {/* Top meta */}
         <div className="pt-28 md:pt-36 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex justify-between text-[10px] tracking-editorial uppercase text-paper/70">
           <span>Vol. I — MMXXVI</span>
-          <span className="hidden md:inline">Tel Aviv · Paris · Milan</span>
+          <span className="hidden md:inline">Tel Aviv · Abuja · Nigeria</span>
           <span>An Exhibition</span>
         </div>
 
@@ -37,7 +37,7 @@ export const Hero = () => {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.4, delay: 0.4 }}
-              className="font-serif text-[18vw] md:text-[14vw] lg:text-[120px] leading-[0.85] tracking-tighter text-balance"
+              className="font-serif text-[14vw] md:text-[14vw] lg:text-[120px] leading-[0.85] tracking-tighter text-balance"
             >
               LIVING MANNEQUIN EVENT<span className="text-rose">.</span>
             </motion.h1>
@@ -58,13 +58,13 @@ export const Hero = () => {
               className="mt-12 flex flex-wrap gap-3 md:gap-4"
             >
               <Button asChild variant="champagne" size="lg">
-                <a href="#waitlist">Join the Waitlist</a>
+                <a href="#waitlist">Get your ticket</a>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-paper/40 text-paper hover:bg-paper hover:text-ink">
                 <a href="#sponsor">Become a Sponsor</a>
               </Button>
               <Button asChild variant="ghost" size="lg" className="text-paper hover:bg-paper/10">
-                <a href="#sponsor">Partner With Us</a>
+                <a href="#sponsor">Join the Waitlist</a>
               </Button>
             </motion.div>
           </div>

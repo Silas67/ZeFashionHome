@@ -2,16 +2,16 @@ const press = ["VOGUE", "DAZED", "NUMÉRO", "AnOther", "i-D", "WALLPAPER*", "032
 
 const quotes = [
   {
-    q: "A rare moment where Tel Aviv breathes the same air as Paris and Milan.",
-    a: "— Numéro",
+    q: "Fashion fades, only style remains the same.",
+    a: "— Coco Chanel",
   },
   {
-    q: "Yoffi has built a language of restraint that the industry has been waiting for.",
-    a: "— AnOther Magazine",
+    q: "Elegance is not standing out, but being remembered.",
+    a: "— Giorgio Armani",
   },
   {
-    q: "Stillness, rendered as spectacle.",
-    a: "— Wallpaper*",
+    q: "Luxury must be comfortable, otherwise it is not luxury.",
+    a: "— Coco Chanel",
   },
 ];
 
@@ -19,18 +19,9 @@ export const SocialProof = () => {
   return (
     <section className="bg-paper text-ink py-24 md:py-32 border-t border-ink/10">
       <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-        <p className="text-center text-[11px] tracking-editorial uppercase text-ink/50">
-          As featured in
-        </p>
-        <div className="mt-10 flex flex-wrap justify-center items-center gap-x-12 gap-y-6">
-          {press.map((p) => (
-            <span
-              key={p}
-              className="font-serif text-xl md:text-2xl tracking-luxe text-ink/60 hover:text-ink transition-colors"
-            >
-              {p}
-            </span>
-          ))}
+
+        <div className="mt-10 text-center text-4xl md:text-5xl font-serif ">
+          This is a space for creativity to be seen. <span className="italic block text-rose" >— ZË</span>
         </div>
 
         <div className="hairline mt-20 mb-16" />
@@ -49,6 +40,6 @@ export const SocialProof = () => {
           ))}
         </div>
       </div>
-    </section>
+    </section >
   );
 };

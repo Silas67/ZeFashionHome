@@ -29,7 +29,7 @@ export const Footer = () => {
         <div className="md:col-span-5">
           <div className="font-serif text-4xl">ZË</div>
           <p className="mt-6 text-paper/60 max-w-sm leading-relaxed">
-            A Nigerian creative platform where fashion meets art. Based in Abuja, Nigeria. Founded by Ahava Yoffi.
+            A Nigerian creative platform where fashion meets art. Based in Abuja, Nigeria. Founded by Zizi.
           </p>
         </div>
 

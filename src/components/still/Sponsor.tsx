@@ -2,7 +2,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import sponsorImg from "@/assets/sponsor-still.jpg";
+import sponsorImg from "@/assets/sponsor.jpg";
 
 const packages = [
   {
