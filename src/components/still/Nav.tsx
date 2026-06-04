@@ -21,7 +21,7 @@ export const Nav = () => {
         }`}
     >
       <nav className="max-w-[1600px] mx-auto px-6 md:px-12 h-16 md:h-20 flex items-center justify-between">
-        <a href="#top" className="font-serif text-xl md:text-3xl tracking-luxe text-ink">
+        <a href="#top" className="font-serif text-3xl md:text-3xl tracking-luxe text-ink">
           ZË
         </a>
         <ul className="hidden md:flex items-center gap-10">
