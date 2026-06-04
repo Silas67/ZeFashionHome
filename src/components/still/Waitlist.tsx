@@ -47,23 +47,41 @@ export const Waitlist = () => {
 
     setSubmitting(true);
     try {
-      // Email automation placeholder — wire to provider here.
-      // await fetch('/api/waitlist', { method: 'POST', body: JSON.stringify({ tier, ...parsed.data }) });
-      await new Promise((r) => setTimeout(r, 900));
-
+      // Generate pass code and QR before the API call so we can
+      // embed the QR in the email on the server side.
       const code = `STILL-${tier.toUpperCase().slice(0, 3)}-${Math.random()
         .toString(36)
         .slice(2, 8)
         .toUpperCase()}`;
+
       const payload = JSON.stringify({ event: "LIVING MANNEQUIN", tier, code, name: parsed.data.name });
       const qr = await QRCode.toDataURL(payload, {
         margin: 1,
         width: 480,
         color: { dark: "#121212", light: "#f8f8f8" },
       });
+
+      // Send to API — passes everything the server needs to build the email.
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tier,
+          code,
+          qr,
+          ...parsed.data,
+        }),
+      });
+
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        throw new Error((json as { error?: string }).error ?? "Server error");
+      }
+
       setConfirmation({ qr, code, name: parsed.data.name });
       toast.success("You're on the list. A confirmation has been sent.");
-    } catch {
+    } catch (err) {
+      console.error(err);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
@@ -141,7 +159,7 @@ export const Waitlist = () => {
                       className="w-full max-w-[280px] aspect-square"
                     />
                     <p className="text-center text-[10px] tracking-editorial uppercase text-ink/60 mt-3">
-                      LIVING MANNIQUIEN · Pass {confirmation.code}
+                      LIVING MANNEQUIN · Pass {confirmation.code}
                     </p>
                   </div>
                 </div>
@@ -199,7 +217,7 @@ export const Waitlist = () => {
                     placeholder="you@studio.com"
                     error={errors.email}
                   />
-                  <Field name="city" label="City" placeholder="Tel Aviv" error={errors.city} />
+                  <Field name="city" label="City" placeholder="Abuja" error={errors.city} />
                   <Field
                     name="note"
                     label={tier === "exhibitor" ? "Portfolio link" : tier === "sponsor" ? "Company" : "A short note (optional)"}
