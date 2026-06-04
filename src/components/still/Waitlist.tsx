@@ -49,7 +49,7 @@ export const Waitlist = () => {
     try {
       // Generate pass code and QR before the API call so we can
       // embed the QR in the email on the server side.
-      const code = `STILL-${tier.toUpperCase().slice(0, 3)}-${Math.random()
+      const code = `ZE-${tier.toUpperCase().slice(0, 3)}-${Math.random()
         .toString(36)
         .slice(2, 8)
         .toUpperCase()}`;
