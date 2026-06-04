@@ -62,7 +62,7 @@ export const Waitlist = () => {
       });
 
       // Send to API — passes everything the server needs to build the email.
-      const res = await fetch("/api/waitlist", {
+      const res = await fetch("https://ze-mailer.houseofze.workers.dev", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
