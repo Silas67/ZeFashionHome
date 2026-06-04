@@ -18,7 +18,7 @@ export const Hero = () => {
         {/* Top meta */}
         <div className="pt-28 md:pt-36 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex justify-between text-[10px] tracking-editorial uppercase text-paper/70">
           <span>Vol. I — MMXXVI</span>
-          <span className="hidden md:inline">Tel Aviv · Abuja · Nigeria</span>
+          <span className="hidden md:inline">X · Abuja · Nigeria</span>
           <span>An Exhibition</span>
         </div>
 
