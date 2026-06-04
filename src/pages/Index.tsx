@@ -32,7 +32,7 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="bg-paper text-ink">
+    <main className="bg-paper text-ink w-[100vw] overflow-x-hidden relative">
       <Nav />
       <Hero />
       <Marquee />
