@@ -41,7 +41,7 @@ export const Story = () => {
               There will be food, champagne, and a Zë souvenir to take home.
             </p>
             <p className="text-ink break-words">
-              This is not a JUST runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
+              This is not JUST runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
             </p>
             <p className="break-words text-ink text-xs md:text-base">
               Entry is free. This is a curated experience for you, so register now.
@@ -54,7 +54,7 @@ export const Story = () => {
               { k: "INSTALLATIONS", v: "08" },
               { k: "HOURS", v: "06" },
             ].map((m) => (
-              <div key={m.k}>
+              <div key={m.k} className="flex flex-col items-center justify-end text-center" >
                 <dt className="text-[10px] tracking-editorial uppercase text-ink/50">{m.k}</dt>
                 <dd className="font-serif text-3xl md:text-4xl mt-1">{m.v}</dd>
               </div>
