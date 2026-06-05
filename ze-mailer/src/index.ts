@@ -155,6 +155,7 @@ function corsResponse(body: string | null, status: number, origin: string = ""):
     "https://houseofze.com",
     "https://www.houseofze.com",
     "https://ze-fashion-home.vercel.app",
+    "http://localhost:8080",
   ];
   const allowedOrigin = allowed.includes(origin) ? origin : allowed[0];
 
