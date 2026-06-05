@@ -9,7 +9,7 @@ const WORKER_URL = "https://ze-mailer.houseofze.workers.dev";
 const packages = [
   {
     name: "Bronze",
-    price: "₦1,000,000",
+    price: "",
     color: "border-ink/15",
     perks: [
       "Recognition in select promotional materials (where relevant)",
@@ -20,7 +20,7 @@ const packages = [
   },
   {
     name: "Silver",
-    price: "₦3,000,000",
+    price: "",
     featured: true,
     color: "border-rose",
     perks: [
@@ -33,7 +33,7 @@ const packages = [
   },
   {
     name: "Gold",
-    price: "₦5,000,000",
+    price: "",
     color: "border-champagne",
     perks: [
       "Co-branding on all promotional materials",
