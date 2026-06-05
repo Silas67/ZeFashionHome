@@ -64,7 +64,7 @@ export const Hero = () => {
                 <a href="#sponsor">Become a Sponsor</a>
               </Button>
               <Button asChild variant="ghost" size="lg" className="text-paper hover:bg-paper/10">
-                <a href="#sponsor">Join the Waitlist</a>
+                <a href="#waitlist">Join the Waitlist</a>
               </Button>
             </motion.div>
           </div>

@@ -24,16 +24,27 @@ export const Story = () => {
             <br />
             <em className="text-rose">living form.</em>
           </h2>
+
           <div className="hairline my-8 md:my-10 max-w-[120px]" />
           <div className="space-y-5 text-ink-soft text-base md:text-lg font-light leading-relaxed">
             <p className="break-words">
-              <span className="font-serif text-xl md:text-2xl text-ink">ZË</span> — a Nigerian creative platform founded on the belief that fashion is not just worn, but embodied — presents its debut exhibition. An evening curated as a slow choreography between garment and gesture, art and atmosphere.
+              <span className="font-serif text-xl md:text-2xl text-ink">ZË</span> — a Nigerian creative platform was founded on a single belief: that creativity is not a hobby, a risk, or a fallback. It is a career, a culture, and a force. And in Nigeria, it deserves to be treated that way.
             </p>
             <p className="break-words">
-              Designers. Artists. Performers. One gallery space. A single night to witness the tension between movement and pause, fabric and form, intention and expression.
+              We exist for the designers, artists, performers, and makers who were told to choose something safer. Zë is the platform that says otherwise.
+            </p>
+            <p className="break-words">
+              This August, we make that visible.
+            </p>
+            <p className="break-words">
+              A gallery-style evening in Abuja where twenty models wear the Zë collection as living art -still, slow, and intentional- surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase of the full collection.
+              There will be food, champagne, and a Zë souvenir to take home.
             </p>
             <p className="text-ink break-words">
               This is not a runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
+            </p>
+            <p className="break-words text-ink text-xs md:text-base">
+              Entry is free. This is a curated experience for you, so register now.
             </p>
           </div>
 

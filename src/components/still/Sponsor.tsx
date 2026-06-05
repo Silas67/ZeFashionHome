@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import sponsorImg from "@/assets/sponsor.jpg";
 
+const WORKER_URL = "https://ze-mailer.houseofze.workers.dev";
+
 const packages = [
   {
     name: "Bronze",
@@ -75,11 +77,22 @@ export const Sponsor = () => {
       return;
     }
     setSubmitting(true);
-    // Email automation placeholder
-    await new Promise((r) => setTimeout(r, 900));
-    setSubmitting(false);
-    (e.target as HTMLFormElement).reset();
-    toast.success("Inquiry received. Our partnerships team will be in touch.");
+    try {
+      const res = await fetch(`${WORKER_URL}/sponsor`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+
+      if (!res.ok) throw new Error("Server error");
+
+      (e.target as HTMLFormElement).reset();
+      toast.success("Inquiry received. Our partnerships team will be in touch.");
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -107,8 +120,7 @@ export const Sponsor = () => {
           {packages.map((p) => (
             <div
               key={p.name}
-              className={`bg-paper p-8 md:p-10 border-t-2 ${p.color} ${p.featured ? "md:-translate-y-4" : ""
-                } transition-transform duration-700`}
+              className={`bg-paper p-8 md:p-10 border-t-2 ${p.color} ${p.featured ? "md:-translate-y-4" : ""} transition-transform duration-700`}
             >
               <div className="flex items-baseline justify-between">
                 <h3 className="font-serif text-3xl">{p.name}</h3>
@@ -156,7 +168,7 @@ export const Sponsor = () => {
               <DarkField name="company" label="Company" error={errors.company} />
               <DarkField name="contact" label="Contact name" error={errors.contact} />
               <DarkField name="email" type="email" label="Email" error={errors.email} />
-              <DarkField name="interest" label="Tier of interest" placeholder="Atelier · Salon · Couture" error={errors.interest} />
+              <DarkField name="interest" label="Tier of interest" placeholder="Bronze · Silver · Gold" error={errors.interest} />
             </div>
             <Button type="submit" size="lg" disabled={submitting} className="min-w-[220px]">
               {submitting ? "Sending…" : "Send Inquiry"}
