@@ -1,7 +1,14 @@
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin") ?? "";
+    const url = new URL(request.url);
 
+    // Admin route
+    if (url.pathname === "/admin") {
+      return handleAdmin(request, env, origin);
+    }
+
+    // CORS preflight
     if (request.method === "OPTIONS") {
       return corsResponse(null, 204, origin);
     }
@@ -11,12 +18,14 @@ export default {
     }
 
     try {
-      const { name, email, tier, code, qr } = await request.json() as {
+      const { name, email, tier, code, qr, city, note } = await request.json() as {
         name: string;
         email: string;
         tier: string;
         code: string;
         qr?: string;
+        city?: string;
+        note?: string;
       };
 
       if (!name || !email || !tier || !code) {
@@ -33,6 +42,18 @@ export default {
       const tierLabel = TIER_LABELS[tier] ?? tier;
       const firstName = name.split(" ")[0];
 
+      // Save to KV
+      await env.SIGNUPS.put(code, JSON.stringify({
+        name,
+        email,
+        tier,
+        city: city ?? "",
+        note: note ?? "",
+        code,
+        timestamp: new Date().toISOString(),
+      }));
+
+      // Send email via Resend
       const res = await fetch("https://api.resend.com/emails", {
         method: "POST",
         headers: {
@@ -96,6 +117,39 @@ export default {
   },
 };
 
+async function handleAdmin(request: Request, env: Env, origin: string): Promise<Response> {
+  // Password check
+  const url = new URL(request.url);
+  const password = url.searchParams.get("password");
+  if (password !== env.ADMIN_PASSWORD) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  // List all signups from KV
+  const list = await env.SIGNUPS.list();
+  const signups = await Promise.all(
+    list.keys.map(async (key) => {
+      const value = await env.SIGNUPS.get(key.name);
+      return value ? JSON.parse(value) : null;
+    })
+  );
+
+  const filtered = signups.filter(Boolean).sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
+
+  return new Response(JSON.stringify({ signups: filtered, total: filtered.length }), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
+
 function corsResponse(body: string | null, status: number, origin: string = ""): Response {
   const allowed = [
     "https://houseofze.com",
@@ -117,4 +171,6 @@ function corsResponse(body: string | null, status: number, origin: string = ""):
 
 interface Env {
   RESEND_API_KEY: string;
+  ADMIN_PASSWORD: string;
+  SIGNUPS: KVNamespace;
 }
