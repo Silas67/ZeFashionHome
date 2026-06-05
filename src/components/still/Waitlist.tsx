@@ -4,6 +4,7 @@ import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { WaitlistModal } from "./WaitlistModal";
 
 type Tier = "general" | "vip" | "exhibitor" | "sponsor";
 
@@ -25,6 +26,7 @@ export const Waitlist = () => {
   const [tier, setTier] = useState<Tier>("general");
   const [submitting, setSubmitting] = useState(false);
   const [confirmation, setConfirmation] = useState<{ qr: string; code: string; name: string } | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,163 +91,170 @@ export const Waitlist = () => {
   };
 
   return (
-    <section id="waitlist" className="bg-ink text-paper py-28 md:py-40 grain relative">
-      <div className="max-w-[1400px] mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-12">
-        <div className="md:col-span-4">
-          <p className="text-[11px] tracking-editorial uppercase text-champagne">— The List</p>
-          <h2 className="mt-6 font-serif text-5xl md:text-6xl leading-[0.95] text-balance">
-            Reserve
-            <br />
-            your <em className="text-rose">place.</em>
-          </h2>
-          <p className="mt-8 text-paper/65 font-light leading-relaxed max-w-sm">
-            Admittance is by ticket only. Submit your details and select the tier that
-            describes you best. You will receive a digital QR pass upon confirmation.
-          </p>
-        </div>
+    <>
+      <WaitlistModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <section id="waitlist" className="bg-ink text-paper py-28 md:py-40 grain relative">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 grid md:grid-cols-12 gap-12">
+          <div className="md:col-span-4">
+            <p className="text-[11px] tracking-editorial uppercase text-champagne">— The List</p>
+            <h2 className="mt-6 font-serif text-5xl md:text-6xl leading-[0.95] text-balance">
+              Reserve
+              <br />
+              your <em className="text-rose">place.</em>
+            </h2>
+            <p className="mt-8 text-paper/65 font-light leading-relaxed max-w-sm">
+              Admittance is by ticket only. Submit your details and select the tier that
+              describes you best. You will receive a digital QR pass upon confirmation.
+            </p>
+          </div>
 
-        <div className="md:col-span-8">
-          <AnimatePresence mode="wait">
-            {confirmation ? (
-              <motion.div
-                key="conf"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8 }}
-                className="border border-paper/15 p-8 md:p-12 bg-paper/[0.03] backdrop-blur-sm"
-              >
-                <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div className="md:col-span-8">
+            <AnimatePresence mode="wait">
+              {confirmation ? (
+                <motion.div
+                  key="conf"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="border border-paper/15 p-8 md:p-12 bg-paper/[0.03] backdrop-blur-sm"
+                >
+                  <div className="grid md:grid-cols-2 gap-10 items-center">
+                    <div>
+                      <p className="text-[11px] tracking-editorial uppercase text-champagne">
+                        Confirmed
+                      </p>
+                      <h3 className="mt-4 font-serif text-4xl md:text-5xl leading-tight">
+                        Welcome,
+                        <br />
+                        <em className="text-rose">{confirmation.name.split(" ")[0]}.</em>
+                      </h3>
+                      <p className="mt-6 text-paper/70 leading-relaxed">
+                        Present this pass at the entrance on the evening of the exhibition.
+                        A copy has been sent to your inbox.
+                      </p>
+                      <dl className="mt-8 space-y-3 text-sm">
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                          <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Pass</dt>
+                          <dd className="font-mono text-paper">{confirmation.code}</dd>
+                        </div>
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                          <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Tier</dt>
+                          <dd className="capitalize">{tier}</dd>
+                        </div>
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                          <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
+                          <dd>14 · 08 · 2026</dd>
+                        </div>
+                      </dl>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-8 text-paper hover:bg-paper/10"
+                        onClick={() => setConfirmation(null)}
+                      >
+                        ← Add another guest
+                      </Button>
+                    </div>
+                    <div className="bg-paper p-4 md:p-6 mx-auto">
+                      <img
+                        src={confirmation.qr}
+                        alt="QR ticket pass"
+                        className="w-full max-w-[280px] aspect-square"
+                      />
+                      <p className="text-center text-[10px] tracking-editorial uppercase text-ink/60 mt-3">
+                        LIVING MANNEQUIN · Pass {confirmation.code}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="space-y-10"
+                  noValidate
+                >
+                  {/* Tier segmented control */}
                   <div>
-                    <p className="text-[11px] tracking-editorial uppercase text-champagne">
-                      Confirmed
-                    </p>
-                    <h3 className="mt-4 font-serif text-4xl md:text-5xl leading-tight">
-                      Welcome,
-                      <br />
-                      <em className="text-rose">{confirmation.name.split(" ")[0]}.</em>
-                    </h3>
-                    <p className="mt-6 text-paper/70 leading-relaxed">
-                      Present this pass at the entrance on the evening of the exhibition.
-                      A copy has been sent to your inbox.
-                    </p>
-                    <dl className="mt-8 space-y-3 text-sm">
-                      <div className="flex justify-between border-t border-paper/15 pt-3">
-                        <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Pass</dt>
-                        <dd className="font-mono text-paper">{confirmation.code}</dd>
-                      </div>
-                      <div className="flex justify-between border-t border-paper/15 pt-3">
-                        <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Tier</dt>
-                        <dd className="capitalize">{tier}</dd>
-                      </div>
-                      <div className="flex justify-between border-t border-paper/15 pt-3">
-                        <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
-                        <dd>14 · 08 · 2026</dd>
-                      </div>
-                    </dl>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-8 text-paper hover:bg-paper/10"
-                      onClick={() => setConfirmation(null)}
-                    >
-                      ← Add another guest
-                    </Button>
-                  </div>
-                  <div className="bg-paper p-4 md:p-6 mx-auto">
-                    <img
-                      src={confirmation.qr}
-                      alt="QR ticket pass"
-                      className="w-full max-w-[280px] aspect-square"
-                    />
-                    <p className="text-center text-[10px] tracking-editorial uppercase text-ink/60 mt-3">
-                      LIVING MANNEQUIN · Pass {confirmation.code}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                onSubmit={handleSubmit}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="space-y-10"
-                noValidate
-              >
-                {/* Tier segmented control */}
-                <div>
-                  <label className="text-[10px] tracking-editorial uppercase text-paper/50">
-                    Select tier
-                  </label>
-                  <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-px bg-paper/10">
-                    {tiers.map((t) => {
-                      const active = tier === t.id;
-                      return (
-                        <button
-                          type="button"
-                          key={t.id}
-                          onClick={() => setTier(t.id)}
-                          className={`p-5 text-left transition-all duration-500 ${active
-                            ? "bg-champagne text-ink"
-                            : "bg-ink text-paper hover:bg-paper/5"
-                            }`}
-                        >
-                          <div className="font-serif text-2xl">{t.label}</div>
-                          <div
-                            className={`text-[10px] tracking-editorial uppercase mt-1 ${active ? "text-ink/60" : "text-paper/50"
+                    <label className="text-[10px] tracking-editorial uppercase text-paper/50">
+                      Select tier
+                    </label>
+                    <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-px bg-paper/10">
+                      {tiers.map((t) => {
+                        const active = tier === t.id;
+                        return (
+                          <button
+                            type="button"
+                            key={t.id}
+                            onClick={() => setTier(t.id)}
+                            className={`p-5 text-left transition-all duration-500 ${active
+                              ? "bg-champagne text-ink"
+                              : "bg-ink text-paper hover:bg-paper/5"
                               }`}
                           >
-                            {t.sub}
-                          </div>
-                        </button>
-                      );
-                    })}
+                            <div className="font-serif text-2xl">{t.label}</div>
+                            <div
+                              className={`text-[10px] tracking-editorial uppercase mt-1 ${active ? "text-ink/60" : "text-paper/50"
+                                }`}
+                            >
+                              {t.sub}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <p className="mt-3 text-sm text-paper/55 italic font-serif">
+                      {tiers.find((t) => t.id === tier)?.note}
+                    </p>
                   </div>
-                  <p className="mt-3 text-sm text-paper/55 italic font-serif">
-                    {tiers.find((t) => t.id === tier)?.note}
-                  </p>
-                </div>
 
-                <div className="grid md:grid-cols-2 gap-6">
-                  <Field name="name" label="Full Name" placeholder="Yael Cohen" error={errors.name} />
-                  <Field
-                    name="email"
-                    type="email"
-                    label="Email"
-                    placeholder="you@studio.com"
-                    error={errors.email}
-                  />
-                  <Field name="city" label="City" placeholder="Abuja" error={errors.city} />
-                  <Field
-                    name="note"
-                    label={tier === "exhibitor" ? "Portfolio link" : tier === "sponsor" ? "Company" : "A short note (optional)"}
-                    placeholder=""
-                    error={errors.note}
-                  />
-                </div>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Field name="name" label="Full Name" placeholder="Yael Cohen" error={errors.name} />
+                    <Field
+                      name="email"
+                      type="email"
+                      label="Email"
+                      placeholder="you@studio.com"
+                      error={errors.email}
+                    />
+                    <Field name="city" label="City" placeholder="Abuja" error={errors.city} />
+                    <Field
+                      name="note"
+                      label={tier === "exhibitor" ? "Portfolio link" : tier === "sponsor" ? "Company" : "A short note (optional)"}
+                      placeholder=""
+                      error={errors.note}
+                    />
+                  </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-2">
-                  <Button
-                    type="submit"
-                    variant="champagne"
-                    size="lg"
-                    disabled={submitting}
-                    className="min-w-[220px]"
-                  >
-                    {submitting ? "Confirming…" : "Submit application"}
-                  </Button>
-                  <p className="text-[11px] text-paper/45 max-w-xs leading-relaxed">
-                    By submitting you agree to receive event correspondence. Unsubscribe anytime.
-                  </p>
-                </div>
-              </motion.form>
-            )}
-          </AnimatePresence>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-6 pt-2">
+                    <Button
+                      type="submit"
+                      variant="champagne"
+                      size="lg"
+                      disabled={submitting}
+                      className="min-w-[220px]"
+                    >
+                      {submitting ? "Confirming…" : "Submit application"}
+                    </Button>
+                    <Button variant="ghost" size="lg" className="text-paper hover:bg-paper/10" onClick={() => setModalOpen(true)}>
+                      Join the Waitlist
+                    </Button>
+                    <p className="text-[11px] text-paper/45 max-w-xs leading-relaxed">
+                      By submitting you agree to receive event correspondence. Unsubscribe anytime.
+                    </p>
+                  </div>
+                </motion.form>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
+
   );
 };
 

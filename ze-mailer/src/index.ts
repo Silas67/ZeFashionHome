@@ -3,79 +3,133 @@ export default {
     const origin = request.headers.get("Origin") ?? "";
     const url = new URL(request.url);
 
-    // Admin route
-    if (url.pathname === "/admin") {
-      return handleAdmin(request, env, origin);
-    }
+    if (url.pathname === "/admin") return handleAdmin(request, env, origin);
+    if (url.pathname === "/sponsor") return handleSponsor(request, env, origin);
 
-    // Sponsor inquiry route
-    if (url.pathname === "/sponsor") {
-      return handleSponsor(request, env, origin);
-    }
-
-    // CORS preflight
-    if (request.method === "OPTIONS") {
-      return corsResponse(null, 204, origin);
-    }
-
-    if (request.method !== "POST") {
-      return corsResponse(JSON.stringify({ error: "Method not allowed" }), 405, origin);
-    }
+    if (request.method === "OPTIONS") return corsResponse(null, 204, origin);
+    if (request.method !== "POST") return corsResponse(JSON.stringify({ error: "Method not allowed" }), 405, origin);
 
     try {
-      const { name, email, tier, code, qr, city, note } = await request.json() as {
+      const { name, email, tier, code, qr, city, note, intent } = await request.json() as {
         name: string;
         email: string;
-        tier: string;
+        tier?: string;
         code: string;
         qr?: string;
         city?: string;
         note?: string;
+        intent?: string;
       };
 
-      if (!name || !email || !tier || !code) {
+      if (!name || !email || !code) {
         return corsResponse(JSON.stringify({ error: "Missing required fields" }), 400, origin);
       }
 
-      const TIER_LABELS: Record<string, string> = {
-        general: "General",
-        vip: "VIP",
-        exhibitor: "Creatives",
-        sponsor: "Sponsor",
-      };
-
-      const tierLabel = TIER_LABELS[tier] ?? tier;
+      const isWaitlist = intent === "waitlist";
       const firstName = name.split(" ")[0];
+
+      const TIER_LABELS: Record<string, string> = {
+        general: "General", vip: "VIP", exhibitor: "Creatives", sponsor: "Sponsor",
+      };
+      const tierLabel = TIER_LABELS[tier ?? ""] ?? tier ?? "";
 
       // Save to KV
       await env.SIGNUPS.put(code, JSON.stringify({
         name,
         email,
-        tier,
+        tier: tier ?? "",
         city: city ?? "",
         note: note ?? "",
         code,
+        intent: intent ?? "ticket",
         timestamp: new Date().toISOString(),
       }));
 
-      // Send email via Resend
-      const res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Zë Events <tickets@houseofze.com>",
-          to: email,
-          subject: `Your Zë Pass · ${code}`,
-          html: `<!DOCTYPE html>
+      if (isWaitlist) {
+        // Waitlist confirmation email — no QR
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: "Zë Events <tickets@houseofze.com>",
+            to: email,
+            subject: `You're on the Zë Waitlist · ${code}`,
+            html: `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Your Zë Pass</title>
-</head>
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
+<body style="margin:0;padding:0;background:#0e0e0e;font-family:Georgia,'Times New Roman',serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0e0e;padding:48px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+        <tr><td style="border-top:1px solid #c9a96e;padding-top:32px;padding-bottom:32px;">
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#c9a96e;">Zë · Living Mannequin</p>
+        </td></tr>
+        <tr><td style="padding-bottom:40px;">
+          <h1 style="margin:0 0 16px;font-size:48px;line-height:1;color:#f0ede6;font-weight:400;">Thank you,<br/><em style="color:#c9a96e;">${firstName}.</em></h1>
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;max-width:420px;">You're on the Zë waitlist. We'll be in touch as the event approaches with priority access and updates.</p>
+        </td></tr>
+        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:32px 28px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td colspan="2" style="padding-bottom:20px;border-bottom:1px solid rgba(240,237,230,0.1);"><p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">What to expect</p></td></tr>
+            <tr><td style="padding:14px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Priority access before general registration opens</td></tr>
+            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; First to receive collection and event details</td></tr>
+            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Exclusive discount on future Zë label pieces</td></tr>
+            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Guaranteed souvenir bag at the event</td></tr>
+          </table>
+        </td></tr>
+        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:20px 28px;margin-top:2px;">
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Reference</td>
+              <td style="font-family:'Courier New',monospace;font-size:13px;color:#f0ede6;text-align:right;">${code}</td>
+            </tr>
+          </table>
+        </td></tr>
+        <tr><td style="border-top:1px solid rgba(240,237,230,0.1);padding-top:32px;padding-bottom:48px;">
+          <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;line-height:1.6;">Questions? Reply to this email and our team will be in touch.</p>
+          <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.1em;">© Zë Creative · Unsubscribe by replying STOP</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+          }),
+        });
+
+        // Notify brand of waitlist signup
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: "Zë Events <tickets@houseofze.com>",
+            to: "ze.thebrand@gmail.com",
+            subject: `New Waitlist Signup — ${name}`,
+            html: `
+              <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
+                <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Waitlist Signup</p>
+                <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
+                <table style="width:100%;border-collapse:collapse;margin-top:24px;">
+                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
+                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
+                  <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Ref</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
+                </table>
+              </div>`,
+          }),
+        });
+
+      } else {
+        // Ticket confirmation email — with QR pass
+        const res = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: "Zë Events <tickets@houseofze.com>",
+            to: email,
+            subject: `Your Zë Pass · ${code}`,
+            html: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
 <body style="margin:0;padding:0;background:#0e0e0e;font-family:Georgia,'Times New Roman',serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0e0e;padding:48px 16px;">
     <tr><td align="center">
@@ -105,39 +159,36 @@ export default {
   </table>
 </body>
 </html>`,
-        }),
-      });
+          }),
+        });
 
-      // Notify the brand
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Zë Events <tickets@houseofze.com>",
-          to: "ze.thebrand@gmail.com",
-          subject: `New Waitlist Signup — ${name} (${tierLabel})`,
-          html: `
-      <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
-        <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Waitlist Signup</p>
-        <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
-        <table style="width:100%;border-collapse:collapse;margin-top:24px;">
-          <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
-          <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Tier</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${tierLabel}</td></tr>
-          <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
-          <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Pass</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
-        </table>
-      </div>
-    `,
-        }),
-      });
+        // Notify brand of ticket signup
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            from: "Zë Events <tickets@houseofze.com>",
+            to: "ze.thebrand@gmail.com",
+            subject: `New Ticket Signup — ${name} (${tierLabel})`,
+            html: `
+              <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
+                <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Ticket Signup</p>
+                <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
+                <table style="width:100%;border-collapse:collapse;margin-top:24px;">
+                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
+                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Tier</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${tierLabel}</td></tr>
+                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
+                  <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Pass</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
+                </table>
+              </div>`,
+          }),
+        });
 
-      if (!res.ok) {
-        const err = await res.json();
-        console.error("Resend error:", err);
-        return corsResponse(JSON.stringify({ error: "Failed to send email" }), 500, origin);
+        if (!res.ok) {
+          const err = await res.json();
+          console.error("Resend error:", err);
+          return corsResponse(JSON.stringify({ error: "Failed to send email" }), 500, origin);
+        }
       }
 
       return corsResponse(JSON.stringify({ success: true }), 200, origin);
@@ -156,34 +207,21 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
 
   try {
     const { company, contact, email, interest } = await request.json() as {
-      company: string;
-      contact: string;
-      email: string;
-      interest?: string;
+      company: string; contact: string; email: string; interest?: string;
     };
 
     if (!company || !contact || !email) {
       return corsResponse(JSON.stringify({ error: "Missing required fields" }), 400, origin);
     }
 
-    // Save to KV
     const key = `SPONSOR-${Date.now()}`;
     await env.SIGNUPS.put(key, JSON.stringify({
-      type: "sponsor",
-      company,
-      contact,
-      email,
-      interest: interest ?? "",
-      timestamp: new Date().toISOString(),
+      type: "sponsor", company, contact, email, interest: interest ?? "", timestamp: new Date().toISOString(),
     }));
 
-    // Notify you
     await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: "Zë Events <tickets@houseofze.com>",
         to: "ze.thebrand@gmail.com",
@@ -198,18 +236,13 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
               <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Tier Interest</td><td style="padding:12px 0;text-align:right;">${interest || "—"}</td></tr>
             </table>
             <a href="mailto:${email}" style="display:inline-block;margin-top:32px;padding:14px 28px;background:#c9a96e;color:#0e0e0e;text-decoration:none;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Reply to ${contact}</a>
-          </div>
-        `,
+          </div>`,
       }),
     });
 
-    // Acknowledge the sponsor
     await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
+      headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: "Zë Events <tickets@houseofze.com>",
         to: email,
@@ -222,8 +255,7 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
               We've received your partnership inquiry for <strong style="color:#f0ede6;">${company}</strong>. Our team will review your interest in the <strong style="color:#f0ede6;">${interest || "sponsorship"}</strong> tier and be in touch shortly.
             </p>
             <p style="color:#9e9e8c;font-size:11px;margin-top:40px;font-family:Arial,sans-serif;">© Zë Creative · houseofze.com</p>
-          </div>
-        `,
+          </div>`,
       }),
     });
 
