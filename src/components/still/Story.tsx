@@ -41,7 +41,7 @@ export const Story = () => {
               There will be food, champagne, and a Zë souvenir to take home.
             </p>
             <p className="text-ink break-words">
-              This is not a runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
+              This is not a JUST runway. <em className="text-rose">This is the moment creativity becomes visible.</em>
             </p>
             <p className="break-words text-ink text-xs md:text-base">
               Entry is free. This is a curated experience for you, so register now.
@@ -63,7 +63,7 @@ export const Story = () => {
         </div>
 
         {/* Slider */}
-        <div className="w-full min-w-0 md:col-span-5 md:col-start-1 order-2 md:order-1">
+        <div className="w-full min-w-0 md:col-span-5 md:col-start-1 order-2 md:order-1 mx-auto">
           <div className="relative overflow-hidden shadow-[var(--shadow-editorial)]">
             <Swiper
               modules={[Autoplay, EffectFade]}
