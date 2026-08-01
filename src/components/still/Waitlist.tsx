@@ -152,7 +152,7 @@ export const Waitlist = () => {
                         </div>
                         <div className="flex justify-between border-t border-paper/15 pt-3">
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
-                          <dd>14 · 08 · 2026</dd>
+                          <dd>29 · 08 · 2026</dd>
                         </div>
                       </dl>
                       <Button
