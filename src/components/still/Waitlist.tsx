@@ -18,6 +18,11 @@ const tiers: { id: Tier; label: string; sub: string; note: string }[] = [
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your full name").max(100),
   email: z.string().trim().email("A valid email is required").max(255),
+   phone: z
+    .string()
+    .trim()
+    .min(7, "Please enter a valid phone number")
+    .max(20, "Phone number is too long"),
   city: z.string().trim().max(80).optional().or(z.literal("")),
   note: z.string().trim().max(500).optional().or(z.literal("")),
 });
@@ -33,12 +38,15 @@ export const Waitlist = () => {
     e.preventDefault();
     setErrors({});
     const fd = new FormData(e.currentTarget);
+
     const data = {
       name: String(fd.get("name") ?? ""),
       email: String(fd.get("email") ?? ""),
+      phone: String(fd.get("phone") ?? ""),
       city: String(fd.get("city") ?? ""),
       note: String(fd.get("note") ?? ""),
     };
+
     const parsed = schema.safeParse(data);
     if (!parsed.success) {
       const errs: Record<string, string> = {};
@@ -220,6 +228,13 @@ export const Waitlist = () => {
                       label="Email"
                       placeholder="you@studio.com"
                       error={errors.email}
+                    />
+                    <Field
+                      name="phone"
+                      type="tel"
+                      label="Phone Number"
+                      placeholder="+234 801 234 5678"
+                      error={errors.phone}
                     />
                     <Field name="city" label="City" placeholder="Abuja" error={errors.city} />
                     <Field
