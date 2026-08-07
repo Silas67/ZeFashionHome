@@ -364,6 +364,18 @@ async function handleAdmin(request: Request, env: Env, origin: string): Promise<
     return corsResponse(JSON.stringify({ error: "Unauthorized" }), 401, origin);
   }
 
+  // Delete a single signup by its KV key (the pass/reference code).
+  if (request.method === "DELETE") {
+    const code = url.searchParams.get("code");
+    if (!code) return corsResponse(JSON.stringify({ error: "Missing code" }), 400, origin);
+
+    const existing = await env.SIGNUPS.get(code);
+    if (existing === null) return corsResponse(JSON.stringify({ error: "Not found" }), 404, origin);
+
+    await env.SIGNUPS.delete(code);
+    return corsResponse(JSON.stringify({ success: true, code }), 200, origin);
+  }
+
   const list = await env.SIGNUPS.list();
   const signups = await Promise.all(
     list.keys.map(async (key) => {
@@ -397,7 +409,7 @@ function corsResponse(body: string | null, status: number, origin: string = ""):
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": allowedOrigin,
-      "Access-Control-Allow-Methods": "POST, OPTIONS, GET",
+      "Access-Control-Allow-Methods": "POST, OPTIONS, GET, DELETE",
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });

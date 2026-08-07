@@ -23,6 +23,17 @@ const TIER_COLORS: Record<string, string> = {
     sponsor: "bg-yellow-700 text-yellow-100",
 };
 
+const DeleteButton = ({ onClick, busy }: { onClick: () => void; busy: boolean }) => (
+    <button
+        onClick={onClick}
+        disabled={busy}
+        title="Delete signup"
+        className="text-[10px] tracking-[0.15em] uppercase text-[#f0ede6]/30 hover:text-rose-400 disabled:opacity-40 transition-colors"
+    >
+        {busy ? "Deleting…" : "Delete"}
+    </button>
+);
+
 export const Admin = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +43,7 @@ export const Admin = () => {
     const [error, setError] = useState("");
     const [tab, setTab] = useState<Tab>("tickets");
     const [ticketFilter, setTicketFilter] = useState("all");
+    const [deleting, setDeleting] = useState<string | null>(null);
 
     const login = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -47,6 +59,24 @@ export const Admin = () => {
             setError("Failed to connect. Try again.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const remove = async (s: Signup) => {
+        if (!window.confirm(`Delete ${s.name} (${s.code})? This cannot be undone.`)) return;
+        setDeleting(s.code);
+        setError("");
+        try {
+            const res = await fetch(
+                `${WORKER_URL}/admin?password=${encodeURIComponent(password)}&code=${encodeURIComponent(s.code)}`,
+                { method: "DELETE" }
+            );
+            if (!res.ok) throw new Error("Delete failed");
+            setSignups((prev) => prev.filter((x) => x.code !== s.code));
+        } catch {
+            setError(`Could not delete ${s.code}. Try again.`);
+        } finally {
+            setDeleting(null);
         }
     };
 
@@ -108,6 +138,10 @@ export const Admin = () => {
                     </div>
                 </div>
 
+                {error && (
+                    <p className="mb-6 border border-rose-900/60 bg-rose-950/30 px-4 py-3 text-sm text-rose-300">{error}</p>
+                )}
+
                 {/* Tab toggle */}
                 <div className="flex gap-px bg-[#f0ede6]/10 mb-10 w-fit">
                     {(["tickets", "waitlist"] as Tab[]).map((t) => (
@@ -148,14 +182,14 @@ export const Admin = () => {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-[#f0ede6]/10">
-                                        {["Name", "Email", "Phone", "Tier", "City", "Note", "Pass", "Date"].map((h) => (
+                                        {["Name", "Email", "Phone", "Tier", "City", "Note", "Pass", "Date", ""].map((h) => (
                                             <th key={h} className="text-left px-6 py-4 text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 font-normal">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredTickets.length === 0 ? (
-                                        <tr><td colSpan={8} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No ticket signups yet.</td></tr>
+                                        <tr><td colSpan={9} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No ticket signups yet.</td></tr>
                                     ) : filteredTickets.map((s) => (
                                         <tr key={s.code} className="border-b border-[#f0ede6]/5 hover:bg-[#f0ede6]/[0.02] transition-colors">
                                             <td className="px-6 py-4 font-serif text-base">{s.name}</td>
@@ -172,6 +206,9 @@ export const Admin = () => {
                                             <td className="px-6 py-4 text-[#f0ede6]/40 text-xs">
                                                 {new Date(s.timestamp).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                                             </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <DeleteButton onClick={() => remove(s)} busy={deleting === s.code} />
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -186,14 +223,14 @@ export const Admin = () => {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-[#f0ede6]/10">
-                                    {["Name", "Email", "Phone", "City", "Reference", "Date"].map((h) => (
+                                    {["Name", "Email", "Phone", "City", "Reference", "Date", ""].map((h) => (
                                         <th key={h} className="text-left px-6 py-4 text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 font-normal">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {waitlist.length === 0 ? (
-                                    <tr><td colSpan={6} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No waitlist signups yet.</td></tr>
+                                    <tr><td colSpan={7} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No waitlist signups yet.</td></tr>
                                 ) : waitlist.map((s) => (
                                     <tr key={s.code} className="border-b border-[#f0ede6]/5 hover:bg-[#f0ede6]/[0.02] transition-colors">
                                         <td className="px-6 py-4 font-serif text-base">{s.name}</td>
@@ -203,6 +240,9 @@ export const Admin = () => {
                                         <td className="px-6 py-4 font-mono text-xs text-rose-400">{s.code}</td>
                                         <td className="px-6 py-4 text-[#f0ede6]/40 text-xs">
                                             {new Date(s.timestamp).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                                        </td>
+                                        <td className="px-6 py-4 text-right">
+                                            <DeleteButton onClick={() => remove(s)} busy={deleting === s.code} />
                                         </td>
                                     </tr>
                                 ))}
