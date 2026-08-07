@@ -18,6 +18,11 @@ const benefits = [
 const schema = z.object({
     name: z.string().trim().min(2, "Please enter your full name").max(100),
     email: z.string().trim().email("A valid email is required").max(255),
+    phone: z
+        .string()
+        .trim()
+        .min(7, "Please enter a valid phone number")
+        .max(20, "Phone number is too long"),
     city: z.string().trim().max(80).optional().or(z.literal("")),
 });
 
@@ -54,6 +59,7 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
         const data = {
             name: String(fd.get("name") ?? ""),
             email: String(fd.get("email") ?? ""),
+            phone: String(fd.get("phone") ?? ""),
             city: String(fd.get("city") ?? ""),
         };
         const parsed = schema.safeParse(data);
@@ -198,6 +204,7 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
                                             <div className="space-y-6">
                                                 <ModalField name="name" label="Full Name" placeholder="Yael Cohen" error={errors.name} />
                                                 <ModalField name="email" type="email" label="Email" placeholder="you@studio.com" error={errors.email} />
+                                                <ModalField name="phone" type="tel" label="Phone Number" placeholder="+234 801 234 5678" error={errors.phone} />
                                                 <ModalField name="city" label="City" placeholder="Abuja" error={errors.city} />
                                             </div>
 

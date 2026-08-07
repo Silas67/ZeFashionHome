@@ -5,6 +5,7 @@ const WORKER_URL = "https://ze-mailer.houseofze.workers.dev";
 type Signup = {
     name: string;
     email: string;
+    phone?: string;
     tier?: string;
     city: string;
     note?: string;
@@ -147,25 +148,26 @@ export const Admin = () => {
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-[#f0ede6]/10">
-                                        {["Name", "Email", "Tier", "City", "Note", "Pass", "Date"].map((h) => (
+                                        {["Name", "Email", "Phone", "Tier", "City", "Note", "Pass", "Date"].map((h) => (
                                             <th key={h} className="text-left px-6 py-4 text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 font-normal">{h}</th>
                                         ))}
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredTickets.length === 0 ? (
-                                        <tr><td colSpan={7} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No ticket signups yet.</td></tr>
+                                        <tr><td colSpan={8} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No ticket signups yet.</td></tr>
                                     ) : filteredTickets.map((s) => (
                                         <tr key={s.code} className="border-b border-[#f0ede6]/5 hover:bg-[#f0ede6]/[0.02] transition-colors">
                                             <td className="px-6 py-4 font-serif text-base">{s.name}</td>
                                             <td className="px-6 py-4 text-[#f0ede6]/70">{s.email}</td>
+                                            <td className="px-6 py-4 text-[#f0ede6]/70 whitespace-nowrap">{s.phone || "—"}</td>
                                             <td className="px-6 py-4">
                                                 <span className={`px-2 py-1 text-[10px] tracking-[0.1em] uppercase rounded-sm ${TIER_COLORS[s.tier ?? ""] ?? "bg-zinc-700 text-zinc-200"}`}>
                                                     {s.tier ?? "—"}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-[#f0ede6]/60">{s.city || "—"}</td>
-                                            <td className="px-6 py-4 text-[#f0ede6]/60 max-w-[200px] truncate">{s.note || "—"}</td>
+                                            <td className="px-6 py-4 text-[#f0ede6]/60">{s.note || "—"}</td>
                                             <td className="px-6 py-4 font-mono text-xs text-[#c9a96e]">{s.code}</td>
                                             <td className="px-6 py-4 text-[#f0ede6]/40 text-xs">
                                                 {new Date(s.timestamp).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
@@ -184,18 +186,19 @@ export const Admin = () => {
                         <table className="w-full text-sm">
                             <thead>
                                 <tr className="border-b border-[#f0ede6]/10">
-                                    {["Name", "Email", "City", "Reference", "Date"].map((h) => (
+                                    {["Name", "Email", "Phone", "City", "Reference", "Date"].map((h) => (
                                         <th key={h} className="text-left px-6 py-4 text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 font-normal">{h}</th>
                                     ))}
                                 </tr>
                             </thead>
                             <tbody>
                                 {waitlist.length === 0 ? (
-                                    <tr><td colSpan={5} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No waitlist signups yet.</td></tr>
+                                    <tr><td colSpan={6} className="px-6 py-12 text-center text-[#f0ede6]/30 font-serif text-lg">No waitlist signups yet.</td></tr>
                                 ) : waitlist.map((s) => (
                                     <tr key={s.code} className="border-b border-[#f0ede6]/5 hover:bg-[#f0ede6]/[0.02] transition-colors">
                                         <td className="px-6 py-4 font-serif text-base">{s.name}</td>
                                         <td className="px-6 py-4 text-[#f0ede6]/70">{s.email}</td>
+                                        <td className="px-6 py-4 text-[#f0ede6]/70 whitespace-nowrap">{s.phone || "—"}</td>
                                         <td className="px-6 py-4 text-[#f0ede6]/60">{s.city || "—"}</td>
                                         <td className="px-6 py-4 font-mono text-xs text-rose-400">{s.code}</td>
                                         <td className="px-6 py-4 text-[#f0ede6]/40 text-xs">

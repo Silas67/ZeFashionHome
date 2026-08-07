@@ -10,9 +10,10 @@ export default {
     if (request.method !== "POST") return corsResponse(JSON.stringify({ error: "Method not allowed" }), 405, origin);
 
     try {
-      const { name, email, tier, code, qr, city, note, intent } = await request.json() as {
+      const { name, email, phone, tier, code, qr, city, note, intent } = await request.json() as {
         name: string;
         email: string;
+        phone?: string;
         tier?: string;
         code: string;
         qr?: string;
@@ -35,8 +36,8 @@ export default {
 
       // Save to KV
       await env.SIGNUPS.put(code, JSON.stringify({
-        name,
-        email,
+        name, email,
+        phone: phone ?? "",
         tier: tier ?? "",
         city: city ?? "",
         note: note ?? "",
@@ -46,7 +47,7 @@ export default {
       }));
 
       if (isWaitlist) {
-        // Waitlist confirmation email — no QR
+        // Waitlist confirmation
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
@@ -61,32 +62,47 @@ export default {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0e0e;padding:48px 16px;">
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
-        <tr><td style="border-top:1px solid #c9a96e;padding-top:32px;padding-bottom:32px;">
+        <tr><td style="border-top:1px solid #c9a96e;padding-top:24px;padding-bottom:24px;">
           <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#c9a96e;">Zë · Living Mannequin</p>
         </td></tr>
-        <tr><td style="padding-bottom:40px;">
-          <h1 style="margin:0 0 16px;font-size:48px;line-height:1;color:#f0ede6;font-weight:400;">Thank you,<br/><em style="color:#c9a96e;">${firstName}.</em></h1>
-          <p style="margin:0;font-size:15px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;max-width:420px;">You're on the Zë waitlist. We'll be in touch as the event approaches with priority access and updates.</p>
+        <tr><td style="padding-bottom:32px;">
+          <h1 style="margin:0 0 16px;font-size:44px;line-height:1;color:#f0ede6;font-weight:400;">Thank you,<br/><em style="color:#c9a96e;">${firstName}.</em></h1>
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">You're on the Zë waitlist for the Living Mannequin exhibition. We'll be in touch as the event approaches with priority access and updates.</p>
         </td></tr>
-        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:32px 28px;">
+        <tr><td style="background:#1a1a1a;border:1px solid rgba(201,169,110,0.2);padding:28px;">
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#c9a96e;">About the Event</p>
+          <h2 style="margin:0 0 12px;font-size:22px;font-weight:400;color:#f0ede6;">Living Mannequin Exhibition</h2>
+          <p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">A gallery-style evening in Abuja where twenty models wear the Zë collection as living art — still, slow, and intentional — surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase.</p>
           <table width="100%" cellpadding="0" cellspacing="0">
-            <tr><td colspan="2" style="padding-bottom:20px;border-bottom:1px solid rgba(240,237,230,0.1);"><p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">What to expect</p></td></tr>
-            <tr><td style="padding:14px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Priority access before general registration opens</td></tr>
-            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; First to receive collection and event details</td></tr>
-            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Exclusive discount on future Zë label pieces</td></tr>
-            <tr><td style="padding:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.6;" colspan="2">✦ &nbsp; Guaranteed souvenir bag at the event</td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">14 August 2026</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">Abuja, Nigeria</td>
+              </tr></table>
+            </td></tr>
           </table>
         </td></tr>
-        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:20px 28px;margin-top:2px;">
+        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:28px;border-top:none;">
+          <p style="margin:0 0 12px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">What to expect as a waitlist member</p>
           <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-              <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Reference</td>
-              <td style="font-family:'Courier New',monospace;font-size:13px;color:#f0ede6;text-align:right;">${code}</td>
-            </tr>
+            ${["Priority access before general registration opens","First to receive collection and event details","Exclusive discount on future Zë label pieces","Guaranteed souvenir bag at the event"].map(item => `
+            <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.5;"><span style="color:#c9a96e;margin-right:8px;">✦</span>${item}</td></tr>`).join("")}
           </table>
         </td></tr>
-        <tr><td style="border-top:1px solid rgba(240,237,230,0.1);padding-top:32px;padding-bottom:48px;">
-          <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;line-height:1.6;">Questions? Reply to this email and our team will be in touch.</p>
+        <tr><td style="border:1px solid rgba(240,237,230,0.08);border-top:none;padding:20px 28px;">
+          <table width="100%"><tr>
+            <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Reference</td>
+            <td style="font-family:'Courier New',monospace;font-size:13px;color:#c9a96e;text-align:right;">${code}</td>
+          </tr></table>
+        </td></tr>
+        <tr><td style="border-top:1px solid rgba(240,237,230,0.1);padding-top:28px;padding-bottom:48px;margin-top:4px;">
+          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Follow us: <a href="https://www.instagram.com/ze.thebrand" style="color:#c9a96e;text-decoration:none;">@ze.thebrand</a></p>
           <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.1em;">© Zë Creative · Unsubscribe by replying STOP</p>
         </td></tr>
       </table>
@@ -97,7 +113,7 @@ export default {
           }),
         });
 
-        // Notify brand of waitlist signup
+        // Notify brand
         await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
@@ -105,28 +121,34 @@ export default {
             from: "Zë Events <tickets@houseofze.com>",
             to: "ze.thebrand@gmail.com",
             subject: `New Waitlist Signup — ${name}`,
-            html: `
-              <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
-                <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Waitlist Signup</p>
-                <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
-                <table style="width:100%;border-collapse:collapse;margin-top:24px;">
-                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
-                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
-                  <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Ref</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
-                </table>
-              </div>`,
+            html: `<div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
+              <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Waitlist Signup</p>
+              <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
+              <table style="width:100%;border-collapse:collapse;margin-top:24px;">
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Phone</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${phone || "—"}</td></tr>
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
+                <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;">Ref</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
+              </table>
+            </div>`,
           }),
         });
 
       } else {
-        // Ticket confirmation email — with QR pass
+        // Extract base64 from data URI for attachment
+        const qrBase64 = qr ? qr.replace(/^data:image\/png;base64,/, "") : null;
+        const qrPayload = JSON.stringify({ event: "LIVING MANNEQUIN", tier, code, name });
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=f0ede6&color=121212&data=${encodeURIComponent(qrPayload)}`;
+
+        // Ticket confirmation with QR as attachment
         const res = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { "Authorization": `Bearer ${env.RESEND_API_KEY}`, "Content-Type": "application/json" },
           body: JSON.stringify({
             from: "Zë Events <tickets@houseofze.com>",
             to: email,
-            subject: `Your Zë Pass · ${code}`,
+            subject: `Your Zë Pass · ${code} — Living Mannequin, 14 Aug 2026`,
+            attachments: qrBase64 ? [{ filename: `ze-pass-${code}.png`, content: qrBase64 }] : [],
             html: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/></head>
@@ -134,26 +156,95 @@ export default {
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0e0e0e;padding:48px 16px;">
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
-        <tr><td style="border-top:1px solid #c9a96e;padding-top:32px;padding-bottom:32px;">
+
+        <tr><td style="border-top:1px solid #c9a96e;padding-top:24px;padding-bottom:24px;">
           <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#c9a96e;">Zë · Living Mannequin</p>
         </td></tr>
-        <tr><td style="padding-bottom:40px;">
-          <h1 style="margin:0 0 16px;font-size:48px;line-height:1;color:#f0ede6;font-weight:400;">Welcome,<br/><em style="color:#c9a96e;">${firstName}.</em></h1>
-          <p style="margin:0;font-size:15px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;max-width:420px;">Your place is reserved. Present this pass at the entrance on the evening of the exhibition.</p>
+
+        <tr><td style="padding-bottom:32px;">
+          <h1 style="margin:0 0 16px;font-size:44px;line-height:1;color:#f0ede6;font-weight:400;">Welcome,<br/><em style="color:#c9a96e;">${firstName}.</em></h1>
+          <p style="margin:0;font-size:15px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">Your place is reserved for the Living Mannequin exhibition. We can't wait to have you.</p>
         </td></tr>
-        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:32px 28px;">
+
+        <tr><td style="background:#1a1a1a;border:1px solid rgba(201,169,110,0.2);padding:28px;">
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#c9a96e;">About the Event</p>
+          <h2 style="margin:0 0 12px;font-size:22px;font-weight:400;color:#f0ede6;line-height:1.2;">Living Mannequin Exhibition</h2>
+          <p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">A gallery-style evening where twenty models wear the Zë collection as living art — still, slow, and intentional — surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase. There will be food, champagne, and a Zë souvenir to take home.</p>
           <table width="100%" cellpadding="0" cellspacing="0">
-            <tr><td colspan="2" style="padding-bottom:20px;border-bottom:1px solid rgba(240,237,230,0.1);"><p style="margin:0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">Pass Details</p></td></tr>
-            <tr><td style="padding:16px 0 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Pass Code</td><td style="padding:16px 0 0;font-family:'Courier New',monospace;font-size:14px;color:#f0ede6;text-align:right;">${code}</td></tr>
-            <tr><td style="padding:12px 0 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Tier</td><td style="padding:12px 0 0;font-size:14px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">${tierLabel}</td></tr>
-            <tr><td style="padding:12px 0 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Name</td><td style="padding:12px 0 0;font-size:14px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">${name}</td></tr>
-            <tr><td style="padding:12px 0 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Date</td><td style="padding:12px 0 0;font-size:14px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">14 · 08 · 2026</td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">14 August 2026</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">Abuja, Nigeria<br/><span style="color:#9e9e8c;font-size:11px;">Venue details to follow</span></td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">🎟 &nbsp;Entry</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">Free — by pass only</td>
+              </tr></table>
+            </td></tr>
           </table>
         </td></tr>
-        <tr><td style="border-top:1px solid rgba(240,237,230,0.1);padding-top:32px;padding-bottom:48px;">
+
+        <tr><td style="border:1px solid rgba(240,237,230,0.12);background:rgba(240,237,230,0.03);padding:28px;border-top:none;">
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">Your Pass</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Pass Code</td>
+                <td style="font-family:'Courier New',monospace;font-size:14px;color:#c9a96e;text-align:right;">${code}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Tier</td>
+                <td style="font-size:13px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">${tierLabel}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Name</td>
+                <td style="font-size:13px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">${name}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">Phone</td>
+                <td style="font-size:13px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">${phone || "—"}</td>
+              </tr></table>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <tr><td align="center" style="padding:28px;background:rgba(240,237,230,0.02);border:1px solid rgba(240,237,230,0.08);border-top:none;">
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#9e9e8c;">Your Entry QR Code</p>
+          <table cellpadding="0" cellspacing="0" style="background:#f0ede6;padding:16px;margin:0 auto;">
+            <tr><td><img src="${qrUrl}" alt="Entry QR Code" width="200" height="200" style="display:block;width:200px;height:200px;" /></td></tr>
+          </table>
+          <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Present this QR code at the entrance on the night.</p>
+          <p style="margin:4px 0 0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.15em;text-transform:uppercase;">Your QR pass is also attached as a PNG file.</p>
+        </td></tr>
+
+        <tr><td style="padding:28px;border:1px solid rgba(240,237,230,0.08);border-top:none;background:#1a1a1a;">
+          <p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:#c9a96e;">What to Expect</p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            ${["20 models as living mannequins wearing the Zë collection","Visual art installations throughout the space","Live violin, spoken word & performances","Champagne service","Closing runway showcase of the full collection","Zë souvenir to take home"].map(item => `
+            <tr><td style="padding:6px 0;font-family:Arial,sans-serif;font-size:13px;color:#9e9e8c;line-height:1.5;"><span style="color:#c9a96e;margin-right:8px;">✦</span>${item}</td></tr>`).join("")}
+          </table>
+        </td></tr>
+
+        <tr><td style="border-top:1px solid rgba(240,237,230,0.1);padding-top:28px;padding-bottom:48px;margin-top:4px;">
           <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;line-height:1.6;">Questions? Reply to this email and our team will be in touch.</p>
+          <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Follow us: <a href="https://www.instagram.com/ze.thebrand" style="color:#c9a96e;text-decoration:none;">@ze.thebrand</a></p>
           <p style="margin:0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.1em;">© Zë Creative · Unsubscribe by replying STOP</p>
         </td></tr>
+
       </table>
     </td></tr>
   </table>
@@ -170,17 +261,17 @@ export default {
             from: "Zë Events <tickets@houseofze.com>",
             to: "ze.thebrand@gmail.com",
             subject: `New Ticket Signup — ${name} (${tierLabel})`,
-            html: `
-              <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
-                <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Ticket Signup</p>
-                <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
-                <table style="width:100%;border-collapse:collapse;margin-top:24px;">
-                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
-                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Tier</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${tierLabel}</td></tr>
-                  <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
-                  <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Pass</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
-                </table>
-              </div>`,
+            html: `<div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
+              <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Ticket Signup</p>
+              <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${name}</h2>
+              <table style="width:100%;border-collapse:collapse;margin-top:24px;">
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Phone</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${phone || "—"}</td></tr>
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Tier</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${tierLabel}</td></tr>
+                <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">City</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${city || "—"}</td></tr>
+                <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;">Pass</td><td style="padding:12px 0;text-align:right;font-family:'Courier New',monospace;">${code}</td></tr>
+              </table>
+            </div>`,
           }),
         });
 
@@ -226,17 +317,16 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
         from: "Zë Events <tickets@houseofze.com>",
         to: "ze.thebrand@gmail.com",
         subject: `New Sponsor Inquiry — ${company}`,
-        html: `
-          <div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
-            <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Sponsor Inquiry</p>
-            <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${company}</h2>
-            <table style="width:100%;border-collapse:collapse;margin-top:24px;">
-              <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Contact</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${contact}</td></tr>
-              <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
-              <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;letter-spacing:0.1em;">Tier Interest</td><td style="padding:12px 0;text-align:right;">${interest || "—"}</td></tr>
-            </table>
-            <a href="mailto:${email}" style="display:inline-block;margin-top:32px;padding:14px 28px;background:#c9a96e;color:#0e0e0e;text-decoration:none;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Reply to ${contact}</a>
-          </div>`,
+        html: `<div style="background:#0e0e0e;padding:40px;font-family:Arial,sans-serif;color:#f0ede6;">
+          <p style="color:#c9a96e;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Zë · New Sponsor Inquiry</p>
+          <h2 style="font-size:32px;font-weight:400;margin:16px 0;">${company}</h2>
+          <table style="width:100%;border-collapse:collapse;margin-top:24px;">
+            <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Contact</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${contact}</td></tr>
+            <tr><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);color:#9e9e8c;font-size:11px;text-transform:uppercase;">Email</td><td style="padding:12px 0;border-bottom:1px solid rgba(240,237,230,0.1);text-align:right;">${email}</td></tr>
+            <tr><td style="padding:12px 0;color:#9e9e8c;font-size:11px;text-transform:uppercase;">Tier Interest</td><td style="padding:12px 0;text-align:right;">${interest || "—"}</td></tr>
+          </table>
+          <a href="mailto:${email}" style="display:inline-block;margin-top:32px;padding:14px 28px;background:#c9a96e;color:#0e0e0e;text-decoration:none;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;">Reply to ${contact}</a>
+        </div>`,
       }),
     });
 
@@ -247,15 +337,12 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
         from: "Zë Events <tickets@houseofze.com>",
         to: email,
         subject: "Zë · Partnership Inquiry Received",
-        html: `
-          <div style="background:#0e0e0e;padding:40px;font-family:Georgia,serif;color:#f0ede6;">
-            <p style="color:#c9a96e;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;font-family:Arial,sans-serif;">Zë · Living Mannequin</p>
-            <h1 style="font-size:40px;font-weight:400;line-height:1.1;margin:24px 0;">Thank you,<br/><em style="color:#c9a96e;">${contact.split(" ")[0]}.</em></h1>
-            <p style="color:#9e9e8c;font-size:15px;line-height:1.7;font-family:Arial,sans-serif;max-width:420px;">
-              We've received your partnership inquiry for <strong style="color:#f0ede6;">${company}</strong>. Our team will review your interest in the <strong style="color:#f0ede6;">${interest || "sponsorship"}</strong> tier and be in touch shortly.
-            </p>
-            <p style="color:#9e9e8c;font-size:11px;margin-top:40px;font-family:Arial,sans-serif;">© Zë Creative · houseofze.com</p>
-          </div>`,
+        html: `<div style="background:#0e0e0e;padding:40px;font-family:Georgia,serif;color:#f0ede6;">
+          <p style="color:#c9a96e;font-size:10px;letter-spacing:0.25em;text-transform:uppercase;font-family:Arial,sans-serif;">Zë · Living Mannequin</p>
+          <h1 style="font-size:40px;font-weight:400;line-height:1.1;margin:24px 0;">Thank you,<br/><em style="color:#c9a96e;">${contact.split(" ")[0]}.</em></h1>
+          <p style="color:#9e9e8c;font-size:15px;line-height:1.7;font-family:Arial,sans-serif;max-width:420px;">We've received your partnership inquiry for <strong style="color:#f0ede6;">${company}</strong>. Our team will review your interest in the <strong style="color:#f0ede6;">${interest || "sponsorship"}</strong> tier and be in touch shortly.</p>
+          <p style="color:#9e9e8c;font-size:11px;margin-top:40px;font-family:Arial,sans-serif;">© Zë Creative · houseofze.com</p>
+        </div>`,
       }),
     });
 
