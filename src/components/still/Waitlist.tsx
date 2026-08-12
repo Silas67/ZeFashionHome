@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { WaitlistModal } from "./WaitlistModal";
+import { EVENT, passUrl } from "@/lib/event";
 
 type Tier = "general" | "vip" | "exhibitor" | "sponsor";
 
@@ -64,8 +65,9 @@ export const Waitlist = () => {
         .slice(2, 8)
         .toUpperCase()}`;
 
-      const payload = JSON.stringify({ event: "LIVING MANNEQUIN", tier, code, name: parsed.data.name });
-      const qr = await QRCode.toDataURL(payload, {
+      // The QR resolves to the guest's live pass page rather than a raw data
+      // blob, so scanning it shows something readable instead of JSON.
+      const qr = await QRCode.toDataURL(passUrl(code), {
         margin: 1,
         width: 480,
         color: { dark: "#121212", light: "#f8f8f8" },
@@ -152,7 +154,7 @@ export const Waitlist = () => {
                         </div>
                         <div className="flex justify-between border-t border-paper/15 pt-3">
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
-                          <dd>29 · 08 · 2026</dd>
+                          <dd>{EVENT.dateNumeric}</dd>
                         </div>
                       </dl>
                       <Button

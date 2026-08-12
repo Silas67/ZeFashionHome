@@ -1,3 +1,18 @@
+/**
+ * Mirror of src/lib/event.ts on the site. Change both together — these are the
+ * only place event facts should be written.
+ */
+const EVENT = {
+  name: "LIVING MANNEQUIN",
+  dateEmail: "29 August 2026",
+  doors: "16:00",
+  location: "Abuja, Nigeria",
+  venue: "Venue details to follow",
+  siteUrl: "https://houseofze.com",
+} as const;
+
+const passUrl = (code: string) => `${EVENT.siteUrl}/pass/${encodeURIComponent(code)}`;
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin") ?? "";
@@ -5,6 +20,7 @@ export default {
 
     if (url.pathname === "/admin") return handleAdmin(request, env, origin);
     if (url.pathname === "/sponsor") return handleSponsor(request, env, origin);
+    if (url.pathname === "/pass") return handlePass(request, env, origin);
 
     if (request.method === "OPTIONS") return corsResponse(null, 204, origin);
     if (request.method !== "POST") return corsResponse(JSON.stringify({ error: "Method not allowed" }), 405, origin);
@@ -77,13 +93,13 @@ export default {
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">14 August 2026</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail} · Doors ${EVENT.doors}</td>
               </tr></table>
             </td></tr>
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">Abuja, Nigeria</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.location}</td>
               </tr></table>
             </td></tr>
           </table>
@@ -137,8 +153,9 @@ export default {
       } else {
         // Extract base64 from data URI for attachment
         const qrBase64 = qr ? qr.replace(/^data:image\/png;base64,/, "") : null;
-        const qrPayload = JSON.stringify({ event: "LIVING MANNEQUIN", tier, code, name });
-        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=f0ede6&color=121212&data=${encodeURIComponent(qrPayload)}`;
+        // The QR resolves to the guest's live pass page. Only the opaque pass
+        // code travels through the third-party image service — no name or tier.
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&bgcolor=f0ede6&color=121212&data=${encodeURIComponent(passUrl(code))}`;
 
         // Ticket confirmation with QR as attachment
         const res = await fetch("https://api.resend.com/emails", {
@@ -147,7 +164,7 @@ export default {
           body: JSON.stringify({
             from: "Zë Events <tickets@houseofze.com>",
             to: email,
-            subject: `Your Zë Pass · ${code} — Living Mannequin, 14 Aug 2026`,
+            subject: `Your Zë Pass · ${code} — Living Mannequin, ${EVENT.dateEmail}`,
             attachments: qrBase64 ? [{ filename: `ze-pass-${code}.png`, content: qrBase64 }] : [],
             html: `<!DOCTYPE html>
 <html lang="en">
@@ -174,13 +191,13 @@ export default {
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">14 August 2026</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail} · Doors ${EVENT.doors}</td>
               </tr></table>
             </td></tr>
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">Abuja, Nigeria<br/><span style="color:#9e9e8c;font-size:11px;">Venue details to follow</span></td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.location}<br/><span style="color:#9e9e8c;font-size:11px;">${EVENT.venue}</span></td>
               </tr></table>
             </td></tr>
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
@@ -227,8 +244,9 @@ export default {
           <table cellpadding="0" cellspacing="0" style="background:#f0ede6;padding:16px;margin:0 auto;">
             <tr><td><img src="${qrUrl}" alt="Entry QR Code" width="200" height="200" style="display:block;width:200px;height:200px;" /></td></tr>
           </table>
-          <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Present this QR code at the entrance on the night.</p>
-          <p style="margin:4px 0 0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.15em;text-transform:uppercase;">Your QR pass is also attached as a PNG file.</p>
+          <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Scan it to open your live pass — countdown, venue and add-to-calendar. Present it at the entrance on the night.</p>
+          <p style="margin:8px 0 0;"><a href="${passUrl(code)}" style="font-family:Arial,sans-serif;font-size:11px;color:#c9a96e;text-decoration:none;letter-spacing:0.1em;">View your pass →</a></p>
+          <p style="margin:8px 0 0;font-family:Arial,sans-serif;font-size:10px;color:#9e9e8c50;letter-spacing:0.15em;text-transform:uppercase;">Your QR pass is also attached as a PNG file.</p>
         </td></tr>
 
         <tr><td style="padding:28px;border:1px solid rgba(240,237,230,0.08);border-top:none;background:#1a1a1a;">
@@ -351,6 +369,39 @@ async function handleSponsor(request: Request, env: Env, origin: string): Promis
     console.error("Sponsor handler error:", err);
     return corsResponse(JSON.stringify({ error: "Internal server error" }), 500, origin);
   }
+}
+
+// ── Public pass lookup ───────────────────────────────────────────────────────
+
+/**
+ * Backs the /pass/<code> page a guest reaches by scanning their QR.
+ *
+ * Unauthenticated by design — anyone holding the code can view it, the same way
+ * anyone holding a paper ticket can read it. It therefore returns only what a
+ * ticket shows: name, tier, code. Email, phone, city and note are never exposed.
+ */
+async function handlePass(request: Request, env: Env, origin: string): Promise<Response> {
+  if (request.method === "OPTIONS") return corsResponse(null, 204, origin);
+  if (request.method !== "GET") return corsResponse(JSON.stringify({ error: "Method not allowed" }), 405, origin);
+
+  const code = new URL(request.url).searchParams.get("code");
+  if (!code) return corsResponse(JSON.stringify({ error: "Missing code" }), 400, origin);
+
+  const raw = await env.SIGNUPS.get(code);
+  if (raw === null) return corsResponse(JSON.stringify({ error: "Not found" }), 404, origin);
+
+  const signup = JSON.parse(raw) as { name?: string; tier?: string; intent?: string };
+
+  // Waitlist entries hold a reference, not an admission pass.
+  if (signup.intent === "waitlist") {
+    return corsResponse(JSON.stringify({ error: "Not found" }), 404, origin);
+  }
+
+  return corsResponse(JSON.stringify({
+    name: signup.name ?? "",
+    tier: signup.tier ?? "",
+    code,
+  }), 200, origin);
 }
 
 // ── Admin handler ────────────────────────────────────────────────────────────

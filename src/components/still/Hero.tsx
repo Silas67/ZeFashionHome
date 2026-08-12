@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import hero from "@/assets/hero.jpg";
 import { useState } from "react";
 import { WaitlistModal } from "./WaitlistModal";
+import { EVENT } from "@/lib/event";
 
 export const Hero = () => {
 
@@ -25,7 +26,7 @@ export const Hero = () => {
           {/* Top meta */}
           <div className="pt-28 md:pt-36 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex justify-between text-[10px] tracking-editorial uppercase text-paper/70">
             <span>Vol. I — MMXXVI</span>
-            <span className="hidden md:inline">X · Abuja · Nigeria</span>
+            <span className="hidden md:inline">{EVENT.city} · {EVENT.country}</span>
             <span>An Exhibition</span>
           </div>
 
@@ -81,7 +82,7 @@ export const Hero = () => {
           <div className="pb-10 md:pb-12 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex justify-between items-end text-[10px] tracking-editorial uppercase text-paper/60">
             <div>
               <div className="text-paper/40">Opening Night</div>
-              <div className="mt-1 text-paper">14 · 09 · 2026</div>
+              <div className="mt-1 text-paper">{EVENT.dateNumeric}</div>
             </div>
             <a href="#story" className="hidden md:flex items-center gap-3 hover:text-paper transition-colors">
               Scroll

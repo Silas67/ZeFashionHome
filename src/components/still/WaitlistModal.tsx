@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { EVENT, EVENT_LOCATION } from "@/lib/event";
 
 const WORKER_URL = "https://ze-mailer.houseofze.workers.dev";
 
@@ -122,12 +123,12 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
                             {/* Left — Benefits */}
                             <div className="p-8 md:p-12 bg-paper/[0.03] border-r border-paper/10 flex flex-col justify-between">
                                 <div>
-                                    <p className="text-[10px] tracking-[0.25em] uppercase text-champagne">29 · 08 · 2026</p>
+                                    <p className="text-[10px] tracking-[0.25em] uppercase text-champagne">{EVENT.dateNumeric}</p>
                                     <h2 className="mt-4 font-serif text-4xl md:text-5xl leading-[0.95]">
                                         Join the<br />
                                         <em className="text-rose">waitlist.</em>
                                     </h2>
-                                    <p className="mt-4 text-[10px] tracking-[0.15em] uppercase text-paper/50">Abuja, Nigeria</p>
+                                    <p className="mt-4 text-[10px] tracking-[0.15em] uppercase text-paper/50">{EVENT_LOCATION}</p>
 
                                     <div className="mt-10 space-y-4">
                                         {benefits.map((b) => (
@@ -167,8 +168,8 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
                                             <dl className="mt-8 space-y-3 text-sm">
                                                 {[
                                                     { k: "Reference", v: confirmation.code },
-                                                    { k: "Date", v: "29 · 08 · 2026" },
-                                                    { k: "Location", v: "Abuja, Nigeria" },
+                                                    { k: "Date", v: EVENT.dateNumeric },
+                                                    { k: "Location", v: EVENT_LOCATION },
                                                 ].map(({ k, v }) => (
                                                     <div key={k} className="flex justify-between border-t border-paper/10 pt-3">
                                                         <dt className="text-paper/40 uppercase tracking-[0.15em] text-[10px]">{k}</dt>

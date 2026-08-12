@@ -8,15 +8,16 @@ import { Sponsor } from "@/components/still/Sponsor";
 import { SocialProof } from "@/components/still/SocialProof";
 import { Countdown } from "@/components/still/Countdown";
 import { Footer } from "@/components/still/Footer";
+import { EVENT, EVENT_LOCATION } from "@/lib/event";
 
 const Index = () => {
   useEffect(() => {
-    document.title = "STILL — Ahava Yoffi · Fashion × Creativity Exhibition";
+    document.title = `${EVENT.brand} — ${EVENT.name} · Fashion × Creativity Exhibition`;
     const meta = document.querySelector('meta[name="description"]') ?? document.createElement("meta");
     meta.setAttribute("name", "description");
     meta.setAttribute(
       "content",
-      "STILL — an immersive fashion × creativity exhibition by Ahava Yoffi. Reserve your place on the waitlist or partner with us."
+      `${EVENT.name} — an immersive fashion × creativity exhibition by ${EVENT.brand}. ${EVENT.dateEmail}, ${EVENT_LOCATION}. Reserve your place or partner with us.`
     );
     document.head.appendChild(meta);
 
