@@ -11,14 +11,29 @@ const EVENT = {
   siteUrl: "https://houseofze.com",
 } as const;
 
+type SignupRecord = {
+  name?: string;
+  email: string;
+  phone?: string;
+  tier?: string;
+  city?: string;
+  note?: string;
+  code?: string;
+  intent?: string;
+  timestamp?: string;
+  type?: string;
+};
+
 const passUrl = (code: string) => `${EVENT.siteUrl}/pass/${encodeURIComponent(code)}`;
 
 export default {
+
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = request.headers.get("Origin") ?? "";
     const url = new URL(request.url);
 
     if (url.pathname === "/admin") return handleAdmin(request, env, origin);
+    if (url.pathname === "/admin/announcement") return handleAnnouncement(request, env, origin);
     if (url.pathname === "/sponsor") return handleSponsor(request, env, origin);
     if (url.pathname === "/pass") return handlePass(request, env, origin);
 
@@ -442,6 +457,204 @@ async function handleAdmin(request: Request, env: Env, origin: string): Promise<
   return corsResponse(JSON.stringify({ signups: filtered, total: filtered.length }), 200, origin);
 }
 
+// ── Admin announcement handler ───────────────────────────────────────────────
+
+async function handleAnnouncement(
+  request: Request,
+  env: Env,
+  origin: string
+): Promise<Response> {
+  if (request.method === "OPTIONS") {
+    return corsResponse(null, 204, origin);
+  }
+
+  if (request.method !== "POST") {
+    return corsResponse(
+      JSON.stringify({ error: "Method not allowed" }),
+      405,
+      origin
+    );
+  }
+
+  const url = new URL(request.url);
+  const password = url.searchParams.get("password");
+
+  if (password !== env.ADMIN_PASSWORD) {
+    return corsResponse(
+      JSON.stringify({ error: "Unauthorized" }),
+      401,
+      origin
+    );
+  }
+
+  try {
+    const body = await request.json() as {
+      subject: string;
+      message: string;
+      audience: string;
+    };
+
+    const { subject, message, audience } = body;
+
+    if (!subject?.trim() || !message?.trim() || !audience) {
+      return corsResponse(
+        JSON.stringify({
+          error: "Subject, message and audience are required"
+        }),
+        400,
+        origin
+      );
+    }
+
+    // Collect every signup from KV, including paginated results.
+    const signups: SignupRecord[] = [];
+
+    let cursor: string | undefined;
+
+    do {
+      const page = await env.SIGNUPS.list(
+        cursor ? { cursor } : undefined
+      );
+
+      for (const key of page.keys) {
+        const raw = await env.SIGNUPS.get(key.name);
+
+        if (!raw) continue;
+
+        try {
+          const signup = JSON.parse(raw) as SignupRecord;
+
+          // Ignore sponsor records for normal event announcements.
+          if (signup.type === "sponsor") continue;
+
+          signups.push(signup);
+        } catch {
+          console.error(`Could not parse signup: ${key.name}`);
+        }
+      }
+
+      cursor = page.list_complete ? undefined : page.cursor;
+    } while (cursor);
+
+    // Select audience.
+    const recipients = signups.filter((signup) => {
+      const intent = signup.intent ?? "ticket";
+
+      switch (audience) {
+        case "everyone":
+          return true;
+
+        case "tickets":
+          return intent === "ticket";
+
+        case "waitlist":
+          return intent === "waitlist";
+
+        case "general":
+        case "vip":
+        case "exhibitor":
+        case "sponsor":
+          return intent === "ticket" && signup.tier === audience;
+
+        default:
+          return false;
+      }
+    });
+
+    if (recipients.length === 0) {
+      return corsResponse(
+        JSON.stringify({
+          error: "No recipients found for this audience"
+        }),
+        400,
+        origin
+      );
+    }
+
+    let sent = 0;
+    let failed = 0;
+
+    /*
+     * Send individually so every person can receive a personalised
+     * first-name greeting.
+     *
+     * We send sequentially rather than firing hundreds of requests
+     * simultaneously.
+     */
+    for (const signup of recipients) {
+      const firstName = escapeHtml(
+        signup.name?.split(" ")[0] || "Guest"
+      );
+
+      const html = announcementEmail({
+        firstName,
+        subject,
+        message,
+      });
+
+      try {
+        const response = await fetch(
+          "https://api.resend.com/emails",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Zë Events <tickets@houseofze.com>",
+              to: signup.email,
+              subject,
+              html,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          sent++;
+        } else {
+          failed++;
+
+          const errorText = await response.text();
+          console.error(
+            `Failed to send to ${signup.email}:`,
+            errorText
+          );
+        }
+      } catch (error) {
+        failed++;
+
+        console.error(
+          `Announcement error for ${signup.email}:`,
+          error
+        );
+      }
+    }
+
+    return corsResponse(
+      JSON.stringify({
+        success: true,
+        total: recipients.length,
+        sent,
+        failed,
+      }),
+      200,
+      origin
+    );
+
+  } catch (error) {
+    console.error("Announcement handler error:", error);
+
+    return corsResponse(
+      JSON.stringify({
+        error: "Failed to send announcement"
+      }),
+      500,
+      origin
+    );
+  }
+}
+
 // ── CORS helper ──────────────────────────────────────────────────────────────
 
 function corsResponse(body: string | null, status: number, origin: string = ""): Response {
@@ -464,6 +677,203 @@ function corsResponse(body: string | null, status: number, origin: string = ""):
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function announcementEmail({
+  firstName,
+  subject,
+  message,
+}: {
+  firstName: string;
+  subject: string;
+  message: string;
+}): string {
+  const safeSubject = escapeHtml(subject);
+
+  const safeMessage = escapeHtml(message)
+    .replace(/\r?\n\r?\n/g, "</p><p>")
+    .replace(/\r?\n/g, "<br/>");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1.0"
+  />
+  <title>${safeSubject}</title>
+</head>
+
+<body style="
+  margin:0;
+  padding:0;
+  background:#0e0e0e;
+  font-family:Georgia,'Times New Roman',serif;
+">
+
+<table
+  width="100%"
+  cellpadding="0"
+  cellspacing="0"
+  style="background:#0e0e0e;padding:48px 16px;"
+>
+  <tr>
+    <td align="center">
+
+      <table
+        width="560"
+        cellpadding="0"
+        cellspacing="0"
+        style="max-width:560px;width:100%;"
+      >
+
+        <tr>
+          <td style="
+            border-top:1px solid #c9a96e;
+            padding-top:24px;
+            padding-bottom:24px;
+          ">
+            <p style="
+              margin:0;
+              font-family:Arial,sans-serif;
+              font-size:10px;
+              letter-spacing:0.25em;
+              text-transform:uppercase;
+              color:#c9a96e;
+            ">
+              Zë · Living Mannequin
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding-bottom:32px;">
+
+            <h1 style="
+              margin:0 0 16px;
+              font-size:44px;
+              line-height:1;
+              color:#f0ede6;
+              font-weight:400;
+            ">
+              Hello,<br/>
+              <em style="color:#c9a96e;">
+                ${firstName}.
+              </em>
+            </h1>
+
+            <p style="
+              margin:0;
+              font-family:Arial,sans-serif;
+              font-size:11px;
+              letter-spacing:0.2em;
+              text-transform:uppercase;
+              color:#9e9e8c;
+            ">
+              Important Event Update
+            </p>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td style="
+            background:#1a1a1a;
+            border:1px solid rgba(201,169,110,0.2);
+            padding:32px;
+          ">
+
+            <h2 style="
+              margin:0 0 24px;
+              font-size:25px;
+              font-weight:400;
+              color:#f0ede6;
+              line-height:1.25;
+            ">
+              ${safeSubject}
+            </h2>
+
+            <div style="
+              font-family:Arial,sans-serif;
+              font-size:14px;
+              line-height:1.8;
+              color:#9e9e8c;
+            ">
+              <p style="margin:0;">
+                ${safeMessage}
+              </p>
+            </div>
+
+          </td>
+        </tr>
+
+        <tr>
+          <td style="
+            padding-top:32px;
+            padding-bottom:48px;
+            border-bottom:1px solid rgba(240,237,230,0.1);
+          ">
+
+            <p style="
+              margin:0 0 8px;
+              font-family:Arial,sans-serif;
+              font-size:11px;
+              color:#9e9e8c;
+              line-height:1.6;
+            ">
+              If you have any questions, simply reply to this email
+              and our team will be in touch.
+            </p>
+
+            <p style="
+              margin:0 0 4px;
+              font-family:Arial,sans-serif;
+              font-size:11px;
+              color:#9e9e8c;
+            ">
+              Follow us:
+              <a
+                href="https://www.instagram.com/ze.thebrand"
+                style="
+                  color:#c9a96e;
+                  text-decoration:none;
+                "
+              >
+                @ze.thebrand
+              </a>
+            </p>
+
+            <p style="
+              margin:0;
+              font-family:Arial,sans-serif;
+              font-size:10px;
+              color:#777;
+              letter-spacing:0.1em;
+            ">
+              © Zë Creative
+            </p>
+
+          </td>
+        </tr>
+
+      </table>
+
+    </td>
+  </tr>
+</table>
+
+</body>
+</html>`;
 }
 
 interface Env {

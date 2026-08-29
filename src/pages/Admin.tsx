@@ -15,6 +15,14 @@ type Signup = {
 };
 
 type Tab = "tickets" | "waitlist";
+type Audience =
+    | "everyone"
+    | "tickets"
+    | "waitlist"
+    | "general"
+    | "vip"
+    | "exhibitor"
+    | "sponsor";
 
 const TIER_COLORS: Record<string, string> = {
     general: "bg-zinc-700 text-zinc-200",
@@ -44,6 +52,13 @@ export const Admin = () => {
     const [tab, setTab] = useState<Tab>("tickets");
     const [ticketFilter, setTicketFilter] = useState("all");
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [showAnnouncement, setShowAnnouncement] = useState(false);
+    const [announcementSubject, setAnnouncementSubject] = useState("");
+    const [announcementMessage, setAnnouncementMessage] = useState("");
+    const [announcementAudience, setAnnouncementAudience] =
+        useState<Audience>("everyone");
+    const [sendingAnnouncement, setSendingAnnouncement] = useState(false);
+    const [announcementResult, setAnnouncementResult] = useState("");
 
     const login = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -77,6 +92,78 @@ export const Admin = () => {
             setError(`Could not delete ${s.code}. Try again.`);
         } finally {
             setDeleting(null);
+        }
+    };
+
+    const sendAnnouncement = async () => {
+        if (!announcementSubject.trim() || !announcementMessage.trim()) {
+            setAnnouncementResult("Please enter a subject and message.");
+            return;
+        }
+
+        const audienceNames: Record<Audience, string> = {
+            everyone: "everyone",
+            tickets: "all ticket holders",
+            waitlist: "the waitlist",
+            general: "General ticket holders",
+            vip: "VIP ticket holders",
+            exhibitor: "Creatives ticket holders",
+            sponsor: "Sponsor ticket holders",
+        };
+
+        const confirmed = window.confirm(
+            `Send this announcement to ${audienceNames[announcementAudience]}?`
+        );
+
+        if (!confirmed) return;
+
+        setSendingAnnouncement(true);
+        setAnnouncementResult("");
+
+        try {
+            const res = await fetch(
+                `${WORKER_URL}/admin/announcement?password=${encodeURIComponent(password)}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        subject: announcementSubject.trim(),
+                        message: announcementMessage.trim(),
+                        audience: announcementAudience,
+                    }),
+                }
+            );
+
+            const data = await res.json() as {
+                success?: boolean;
+                total?: number;
+                sent?: number;
+                failed?: number;
+                error?: string;
+            };
+
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to send announcement");
+            }
+
+            setAnnouncementResult(
+                `Announcement sent. ${data.sent ?? 0} of ${data.total ?? 0} emails delivered${data.failed ? `, ${data.failed} failed.` : "."
+                }`
+            );
+
+            setAnnouncementSubject("");
+            setAnnouncementMessage("");
+
+        } catch (error) {
+            setAnnouncementResult(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to send announcement."
+            );
+        } finally {
+            setSendingAnnouncement(false);
         }
     };
 
@@ -122,20 +209,42 @@ export const Admin = () => {
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                    
                     <div>
                         <p className="text-[11px] tracking-[0.25em] uppercase text-[#c9a96e] mb-3">Zë · Admin</p>
                         <h1 className="font-serif text-5xl">Dashboard</h1>
                     </div>
+
                     <div className="flex gap-8">
                         <div className="text-right">
-                            <p className="font-serif text-4xl text-[#c9a96e]">{tickets.length}</p>
-                            <p className="text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 mt-1">Tickets</p>
+                            <p className="font-serif text-4xl text-[#c9a96e]">
+                                {tickets.length}
+                            </p>
+                            <p className="text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 mt-1">
+                                Tickets
+                            </p>
                         </div>
+
                         <div className="text-right">
-                            <p className="font-serif text-4xl text-rose-400">{waitlist.length}</p>
-                            <p className="text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 mt-1">Waitlist</p>
+                            <p className="font-serif text-4xl text-rose-400">
+                                {waitlist.length}
+                            </p>
+                            <p className="text-[10px] tracking-[0.2em] uppercase text-[#f0ede6]/40 mt-1">
+                                Waitlist
+                            </p>
                         </div>
                     </div>
+
+                    <button
+                        onClick={() => {
+                            setShowAnnouncement(true);
+                            setAnnouncementResult("");
+                        }}
+                            className=" px-6 py-3 bg-[#c9a96e] text-[#0e0e0e] text-[10px] tracking-[0.2em] uppercase
+                                hover:bg-[#f0ede6] transition-colors"
+                    >
+                        Send Announcement
+                    </button>
                 </div>
 
                 {error && (
@@ -248,6 +357,254 @@ export const Admin = () => {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {showAnnouncement && (
+                    <div className="
+                        fixed inset-0 z-50
+                        bg-black/80
+                        flex items-center justify-center
+                        p-6
+                    ">
+                        <div className="
+                            w-full max-w-2xl
+                            max-h-[90vh]
+                            overflow-y-auto
+                            bg-[#141414]
+                            border border-[#f0ede6]/10
+                            p-8
+                        ">
+
+                            <div className="flex items-start justify-between gap-6 mb-8">
+                                <div>
+                                    <p className="
+                                        text-[10px]
+                                        tracking-[0.25em]
+                                        uppercase
+                                        text-[#c9a96e]
+                                        mb-3
+                                    ">
+                                        Zë · Communications
+                                    </p>
+
+                                    <h2 className="font-serif text-3xl">
+                                        Send Announcement
+                                    </h2>
+                                </div>
+
+                                <button
+                                    onClick={() => setShowAnnouncement(false)}
+                                    className="
+                                        text-[#f0ede6]/40
+                                        hover:text-[#f0ede6]
+                                        text-xl
+                                    "
+                                >
+                                    ×
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+
+                                {/* Audience */}
+                                <div>
+                                    <label className="
+                                        block
+                                        text-[10px]
+                                        tracking-[0.2em]
+                                        uppercase
+                                        text-[#f0ede6]/40
+                                        mb-3
+                                    ">
+                                        Send To
+                                    </label>
+
+                                    <select
+                                        value={announcementAudience}
+                                        onChange={(e) =>
+                                            setAnnouncementAudience(
+                                                e.target.value as Audience
+                                            )
+                                        }
+                                        className="
+                                            w-full
+                                            bg-[#0e0e0e]
+                                            border border-[#f0ede6]/15
+                                            px-4 py-3
+                                            text-sm
+                                            text-[#f0ede6]
+                                            outline-none
+                                            focus:border-[#c9a96e]
+                                        "
+                                    >
+                                        <option value="everyone">
+                                            Everyone
+                                        </option>
+
+                                        <option value="tickets">
+                                            All Ticket Holders
+                                        </option>
+
+                                        <option value="waitlist">
+                                            Waitlist
+                                        </option>
+
+                                        <option value="general">
+                                            General
+                                        </option>
+
+                                        <option value="vip">
+                                            VIP
+                                        </option>
+
+                                        <option value="exhibitor">
+                                            Creatives
+                                        </option>
+
+                                        <option value="sponsor">
+                                            Sponsor
+                                        </option>
+                                    </select>
+                                </div>
+
+                                {/* Subject */}
+                                <div>
+                                    <label className="
+                                        block
+                                        text-[10px]
+                                        tracking-[0.2em]
+                                        uppercase
+                                        text-[#f0ede6]/40
+                                        mb-3
+                                    ">
+                                        Subject
+                                    </label>
+
+                                    <input
+                                        value={announcementSubject}
+                                        onChange={(e) =>
+                                            setAnnouncementSubject(e.target.value)
+                                        }
+                                        placeholder="Important Update — Living Mannequin"
+                                        className="
+                                            w-full
+                                            bg-transparent
+                                            border-b border-[#f0ede6]/20
+                                            px-0 py-3
+                                            text-[#f0ede6]
+                                            font-serif
+                                            text-lg
+                                            outline-none
+                                            focus:border-[#c9a96e]
+                                            placeholder:text-[#f0ede6]/20
+                                        "
+                                    />
+                                </div>
+
+                                {/* Message */}
+                                <div>
+                                    <label className="
+                                        block
+                                        text-[10px]
+                                        tracking-[0.2em]
+                                        uppercase
+                                        text-[#f0ede6]/40
+                                        mb-3
+                                    ">
+                                        Message
+                                    </label>
+
+                                    <textarea
+                                        value={announcementMessage}
+                                        onChange={(e) =>
+                                            setAnnouncementMessage(e.target.value)
+                                        }
+                                        rows={10}
+                                        placeholder={`Dear attendee,
+
+                    We have an important update regarding the Living Mannequin exhibition.
+
+                    The event date has been moved...
+
+                    Thank you,
+                    Zë Events`}
+                                        className="
+                                            w-full
+                                            bg-[#0e0e0e]
+                                            border border-[#f0ede6]/15
+                                            px-4 py-4
+                                            text-sm
+                                            leading-7
+                                            text-[#f0ede6]
+                                            outline-none
+                                            resize-y
+                                            focus:border-[#c9a96e]
+                                            placeholder:text-[#f0ede6]/20
+                                        "
+                                    />
+                                </div>
+
+                                {announcementResult && (
+                                    <div className="
+                                        border
+                                        border-[#c9a96e]/30
+                                        bg-[#c9a96e]/5
+                                        px-4 py-3
+                                        text-sm
+                                        text-[#c9a96e]
+                                    ">
+                                        {announcementResult}
+                                    </div>
+                                )}
+
+                                {/* Actions */}
+                                <div className="flex justify-end gap-3 pt-2">
+
+                                    <button
+                                        onClick={() => setShowAnnouncement(false)}
+                                        disabled={sendingAnnouncement}
+                                        className="
+                                            px-6 py-3
+                                            border border-[#f0ede6]/15
+                                            text-[10px]
+                                            tracking-[0.2em]
+                                            uppercase
+                                            text-[#f0ede6]/60
+                                            hover:text-[#f0ede6]
+                                        "
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        onClick={sendAnnouncement}
+                                        disabled={
+                                            sendingAnnouncement ||
+                                            !announcementSubject.trim() ||
+                                            !announcementMessage.trim()
+                                        }
+                                        className="
+                                            px-6 py-3
+                                            bg-[#c9a96e]
+                                            text-[#0e0e0e]
+                                            text-[10px]
+                                            tracking-[0.2em]
+                                            uppercase
+                                            disabled:opacity-40
+                                            hover:bg-[#f0ede6]
+                                            transition-colors
+                                        "
+                                    >
+                                        {sendingAnnouncement
+                                            ? "Sending…"
+                                            : "Send Announcement"}
+                                    </button>
+
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
                 )}
 
