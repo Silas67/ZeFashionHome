@@ -4,7 +4,6 @@
  */
 const EVENT = {
   name: "LIVING MANNEQUIN",
-  dateEmail: "29 August 2026",
   doors: "16:00",
   location: "Abuja, Nigeria",
   venue: "Venue details to follow",
@@ -107,12 +106,6 @@ export default {
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
-                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail} · Doors ${EVENT.doors}</td>
-              </tr></table>
-            </td></tr>
-            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
-              <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
                 <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.location}</td>
               </tr></table>
@@ -179,7 +172,7 @@ export default {
           body: JSON.stringify({
             from: "Zë Events <tickets@houseofze.com>",
             to: email,
-            subject: `Your Zë Pass · ${code} — Living Mannequin, ${EVENT.dateEmail}`,
+            subject: `Your Zë Pass · ${code} — Living Mannequin`,
             attachments: qrBase64 ? [{ filename: `ze-pass-${code}.png`, content: qrBase64 }] : [],
             html: `<!DOCTYPE html>
 <html lang="en">
@@ -203,12 +196,6 @@ export default {
           <h2 style="margin:0 0 12px;font-size:22px;font-weight:400;color:#f0ede6;line-height:1.2;">Living Mannequin Exhibition</h2>
           <p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">A gallery-style evening where twenty models wear the Zë collection as living art — still, slow, and intentional — surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase. There will be food, champagne, and a Zë souvenir to take home.</p>
           <table width="100%" cellpadding="0" cellspacing="0">
-            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
-              <table width="100%"><tr>
-                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📅 &nbsp;Date</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail} · Doors ${EVENT.doors}</td>
-              </tr></table>
-            </td></tr>
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
