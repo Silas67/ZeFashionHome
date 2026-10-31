@@ -38,7 +38,7 @@ const Index = () => {
       <Hero />
       <Marquee />
       <Story />
-      <Countdown />
+      {/* <Countdown /> */}
       <Waitlist />
       <SocialProof />
       <Sponsor />
