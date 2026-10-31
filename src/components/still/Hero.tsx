@@ -80,10 +80,10 @@ export const Hero = () => {
 
           {/* Bottom meta */}
           <div className="pb-10 md:pb-12 px-6 md:px-12 max-w-[1600px] mx-auto w-full flex justify-between items-end text-[10px] tracking-editorial uppercase text-paper/60">
-            <div>
+            {/* <div>
               <div className="text-paper/40">Opening Night</div>
               <div className="mt-1 text-paper">{EVENT.dateNumeric}</div>
-            </div>
+            </div> */}
             <a href="#story" className="hidden md:flex items-center gap-3 hover:text-paper transition-colors">
               Scroll
               <span className="block h-px w-16 bg-paper/50" />
