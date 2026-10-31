@@ -108,14 +108,7 @@ export async function POST(req: Request) {
                     ${name}
                   </td>
                 </tr>
-                <tr>
-                  <td style="padding:12px 0 0;font-family:Arial,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:#9e9e8c;">
-                    Date
-                  </td>
-                  <td style="padding:12px 0 0;font-size:14px;color:#f0ede6;text-align:right;font-family:Arial,sans-serif;">
-                    14 · 08 · 2026
-                  </td>
-                </tr>
+                
               </table>
             </td>
           </tr>

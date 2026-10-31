@@ -17,7 +17,7 @@ const Index = () => {
     meta.setAttribute("name", "description");
     meta.setAttribute(
       "content",
-      `${EVENT.name} — an immersive fashion × creativity exhibition by ${EVENT.brand}. ${EVENT.dateEmail}, ${EVENT_LOCATION}. Reserve your place or partner with us.`
+      `${EVENT.name} — an immersive fashion × creativity exhibition by ${EVENT.brand}. ${EVENT_LOCATION}. Reserve your place or partner with us.`
     );
     document.head.appendChild(meta);
 

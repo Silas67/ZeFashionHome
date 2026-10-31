@@ -19,9 +19,9 @@ export const EVENT = {
   venue: "Venue details to follow",
 
   /** Display forms, so formatting stays consistent across surfaces. */
-  dateNumeric: ".",
-  dateLong: ".",
-  dateEmail: ".",
+  dateNumeric: "",
+  dateLong: "",
+  dateEmail: "",
 
   /** Public origin — used to build the QR pass URL. */
   siteUrl: "https://houseofze.com",

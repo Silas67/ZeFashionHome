@@ -152,10 +152,10 @@ export const Waitlist = () => {
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Tier</dt>
                           <dd className="capitalize">{tier}</dd>
                         </div>
-                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                        {/* <div className="flex justify-between border-t border-paper/15 pt-3">
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
                           <dd>{EVENT.dateNumeric}</dd>
-                        </div>
+                        </div> */}
                       </dl>
                       <Button
                         variant="ghost"

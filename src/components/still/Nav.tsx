@@ -4,7 +4,7 @@ const links = [
   { href: "#story", label: "Story" },
   { href: "#waitlist", label: "Waitlist" },
   { href: "#sponsor", label: "Sponsor" },
-  { href: "#countdown", label: "The Date" },
+  // { href: "#countdown", label: "The Date" },
 ];
 
 export const Nav = () => {

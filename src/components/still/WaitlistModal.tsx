@@ -123,7 +123,7 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
                             {/* Left — Benefits */}
                             <div className="p-8 md:p-12 bg-paper/[0.03] border-r border-paper/10 flex flex-col justify-between">
                                 <div>
-                                    <p className="text-[10px] tracking-[0.25em] uppercase text-champagne">{EVENT.dateNumeric}</p>
+                                    {/* <p className="text-[10px] tracking-[0.25em] uppercase text-champagne">{EVENT.dateNumeric}</p> */}
                                     <h2 className="mt-4 font-serif text-4xl md:text-5xl leading-[0.95]">
                                         Join the<br />
                                         <em className="text-rose">waitlist.</em>
@@ -168,7 +168,7 @@ export const WaitlistModal = ({ open, onClose }: WaitlistModalProps) => {
                                             <dl className="mt-8 space-y-3 text-sm">
                                                 {[
                                                     { k: "Reference", v: confirmation.code },
-                                                    { k: "Date", v: EVENT.dateNumeric },
+                                                    // { k: "Date", v: EVENT.dateNumeric },
                                                     { k: "Location", v: EVENT_LOCATION },
                                                 ].map(({ k, v }) => (
                                                     <div key={k} className="flex justify-between border-t border-paper/10 pt-3">
