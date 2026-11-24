@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 const links = [
   { href: "#story", label: "Story" },
+  { href: "#countdown", label: "The Date" },
   { href: "#waitlist", label: "Waitlist" },
   { href: "#sponsor", label: "Sponsor" },
-  // { href: "#countdown", label: "The Date" },
 ];
 
 export const Nav = () => {

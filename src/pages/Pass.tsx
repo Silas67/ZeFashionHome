@@ -172,7 +172,7 @@ export const Pass = () => {
                         Add to calendar
                     </a>
                     <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(EVENT_LOCATION)}`}
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${EVENT.venue}, ${EVENT_LOCATION}`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block w-full py-4 border border-[#f0ede6]/20 text-center text-[11px] tracking-[0.2em] uppercase text-[#f0ede6]/70 hover:border-[#f0ede6]/50 hover:text-[#f0ede6] transition-colors"

@@ -52,7 +52,7 @@ export const Story = () => {
             {[
               { k: "CREATIVES", v: "20" },
               { k: "INSTALLATIONS", v: "08" },
-              { k: "HOURS", v: "06" },
+              { k: "HOURS", v: "04" },
             ].map((m) => (
               <div key={m.k} className="flex flex-col items-center justify-end text-center" >
                 <dt className="text-[10px] tracking-editorial uppercase text-ink/50">{m.k}</dt>

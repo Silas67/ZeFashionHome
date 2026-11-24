@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { WaitlistModal } from "./WaitlistModal";
-import { EVENT, passUrl } from "@/lib/event";
+import { EVENT, EVENT_LOCATION, passUrl } from "@/lib/event";
 
 type Tier = "general" | "vip" | "exhibitor" | "sponsor";
 
@@ -152,10 +152,18 @@ export const Waitlist = () => {
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Tier</dt>
                           <dd className="capitalize">{tier}</dd>
                         </div>
-                        {/* <div className="flex justify-between border-t border-paper/15 pt-3">
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
                           <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Date</dt>
-                          <dd>{EVENT.dateNumeric}</dd>
-                        </div> */}
+                          <dd>{EVENT.dateLong}</dd>
+                        </div>
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                          <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Time</dt>
+                          <dd className="text-right">{EVENT.time}</dd>
+                        </div>
+                        <div className="flex justify-between border-t border-paper/15 pt-3">
+                          <dt className="text-paper/50 uppercase tracking-luxe text-[10px]">Venue</dt>
+                          <dd className="text-right">{EVENT.venue}, {EVENT_LOCATION}</dd>
+                        </div>
                       </dl>
                       <Button
                         variant="ghost"

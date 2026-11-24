@@ -12,12 +12,12 @@ import { EVENT, EVENT_LOCATION } from "@/lib/event";
 
 const Index = () => {
   useEffect(() => {
-    document.title = `${EVENT.brand} — ${EVENT.name} · Fashion × Creativity Exhibition`;
+    document.title = `${EVENT.brand} — ${EVENT.name} · ${EVENT.dateLong}`;
     const meta = document.querySelector('meta[name="description"]') ?? document.createElement("meta");
     meta.setAttribute("name", "description");
     meta.setAttribute(
       "content",
-      `${EVENT.name} — an immersive fashion × creativity exhibition by ${EVENT.brand}. ${EVENT_LOCATION}. Reserve your place or partner with us.`
+      `${EVENT.name} — ${EVENT.dateLong} at ${EVENT.venue}, ${EVENT_LOCATION}. ${EVENT.time}. Reserve your place or partner with us.`
     );
     document.head.appendChild(meta);
 
@@ -38,7 +38,7 @@ const Index = () => {
       <Hero />
       <Marquee />
       <Story />
-      {/* <Countdown /> */}
+      <Countdown />
       <Waitlist />
       <SocialProof />
       <Sponsor />
