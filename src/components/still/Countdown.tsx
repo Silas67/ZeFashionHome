@@ -34,7 +34,7 @@ export const Countdown = () => {
           {EVENT.dateLong}
         </h2>
         <p className="mt-6 text-ink/60 tracking-luxe text-xs uppercase">
-          {EVENT_LOCATION} · Doors {EVENT.doors}
+          {EVENT.venue}, {EVENT_LOCATION} · {EVENT.time}
         </p>
 
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-2 max-w-4xl mx-auto">

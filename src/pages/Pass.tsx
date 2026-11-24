@@ -34,7 +34,8 @@ const calc = () => {
 const calendarHref = (code: string) => {
     const stamp = (d: Date) => d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
     const start = new Date(EVENT.startsAt);
-    const end = new Date(start.getTime() + 6 * 3600000);
+    const end = new Date(EVENT.endsAt);
+    const escapeText = (value: string) => value.replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
     const ics = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
@@ -45,8 +46,9 @@ const calendarHref = (code: string) => {
         `DTSTART:${stamp(start)}`,
         `DTEND:${stamp(end)}`,
         `SUMMARY:${EVENT.brand} — ${EVENT.name}`,
-        `LOCATION:${EVENT_LOCATION}`,
-        `DESCRIPTION:Your pass code is ${code}. Present this at the entrance.`,
+        `LOCATION:${escapeText(`${EVENT.venue}, ${EVENT_LOCATION}`)}`,
+        `DESCRIPTION:${escapeText(`Your pass code is ${code}. Present this at the entrance. Time: ${EVENT.time}.`)}`,
+        "STATUS:TENTATIVE",
         "END:VEVENT",
         "END:VCALENDAR",
     ].join("\r\n");
@@ -149,7 +151,7 @@ export const Pass = () => {
                         { k: "Pass", v: pass.code, mono: true },
                         { k: "Tier", v: tierLabel ?? "—" },
                         { k: "Date", v: EVENT.dateEmail },
-                        { k: "Doors", v: EVENT.doors },
+                        { k: "Time", v: EVENT.time },
                         { k: "Location", v: EVENT_LOCATION },
                         { k: "Venue", v: EVENT.venue },
                     ].map(({ k, v, mono }) => (

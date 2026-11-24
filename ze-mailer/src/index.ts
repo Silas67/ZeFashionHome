@@ -5,8 +5,10 @@
 const EVENT = {
   name: "LIVING MANNEQUIN",
   doors: "16:00",
+  dateEmail: "Saturday, 12 December 2026",
+  time: "4:00 PM – 8:00 PM WAT (proposed; confirm before final artwork)",
   location: "Abuja, Nigeria",
-  venue: "Venue details to follow",
+  venue: "The Barcelona Hotel rooftop, Wuse 2",
   siteUrl: "https://houseofze.com",
 } as const;
 
@@ -106,8 +108,20 @@ export default {
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Date</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Time</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.time}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>
-                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.location}</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.location}<br/><span style="color:#9e9e8c;font-size:11px;">${EVENT.venue}</span></td>
               </tr></table>
             </td></tr>
           </table>
@@ -196,6 +210,18 @@ export default {
           <h2 style="margin:0 0 12px;font-size:22px;font-weight:400;color:#f0ede6;line-height:1.2;">Living Mannequin Exhibition</h2>
           <p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#9e9e8c;font-family:Arial,sans-serif;">A gallery-style evening where twenty models wear the Zë collection as living art — still, slow, and intentional — surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase. There will be food, champagne, and a Zë souvenir to take home.</p>
           <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Date</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.dateEmail}</td>
+              </tr></table>
+            </td></tr>
+            <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
+              <table width="100%"><tr>
+                <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">Time</td>
+                <td style="font-family:Arial,sans-serif;font-size:13px;color:#f0ede6;text-align:right;">${EVENT.time}</td>
+              </tr></table>
+            </td></tr>
             <tr><td style="padding:10px 0;border-top:1px solid rgba(240,237,230,0.08);">
               <table width="100%"><tr>
                 <td style="font-family:Arial,sans-serif;font-size:11px;color:#9e9e8c;">📍 &nbsp;Location</td>

@@ -34,7 +34,7 @@ export const Story = () => {
               We exist for the designers, artists, performers, and makers who were told to choose something safer. Zë is the platform that says otherwise.
             </p>
             <p className="break-words">
-              This August, we make that visible.
+              This December, we make that visible.
             </p>
             <p className="break-words">
               A gallery-style evening in Abuja where twenty models wear the Zë collection as living art -still, slow, and intentional- surrounded by visual art installations, live performances, spoken word, live violin, and a closing runway showcase of the full collection.
