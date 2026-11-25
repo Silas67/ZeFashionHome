@@ -6,7 +6,7 @@ const EVENT = {
   name: "LIVING MANNEQUIN",
   doors: "16:00",
   dateEmail: "Saturday, 12 December 2026",
-  time: "4:00 PM – 8:00 PM WAT (proposed; confirm before final artwork)",
+  time: "4:00 PM – 8:00 PM WAT",
   location: "Abuja, Nigeria",
   venue: "The Barcelona Hotel rooftop, Wuse 2",
   siteUrl: "https://houseofze.com",

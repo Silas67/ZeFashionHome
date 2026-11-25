@@ -15,7 +15,7 @@ export const EVENT = {
   endsAt: "2026-12-12T20:00:00+01:00",
 
   doors: "16:00",
-  time: "4:00 PM – 8:00 PM WAT (proposed; confirm before final artwork)",
+  time: "4:00 PM – 8:00 PM WAT",
   city: "Abuja",
   country: "Nigeria",
   venue: "The Barcelona Hotel rooftop, Wuse 2",
